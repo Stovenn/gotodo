@@ -1,3 +1,6 @@
+cmd=httpserver
+app=
+
 fmt:
 	go fmt ./...
 
@@ -8,9 +11,9 @@ vet:
 	go vet ./...
 
 build:vet
-	go build -o gotodo cmd/main.go
+	go build -o $(cmd) cmd/$(cmd)/main.go
 
 run:build
-	./gotodo
+	./$(app)
 
 .PHONY: fmt lint vet build

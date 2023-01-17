@@ -1,11 +1,11 @@
 package domain
 
 type Todo struct {
-	id        string
-	title     string
-	completed bool
-	order     int
-	url       string
+	Id        string
+	Title     string
+	Completed bool
+	Order     int
+	Url       string
 }
 
 type TodoResponse struct {
@@ -32,12 +32,12 @@ type TodoPartialUpdateRequest struct {
 	Order     int    `json:"order omitempty"`
 }
 
-func (t Todo) toResponse() TodoResponse {
-	return TodoResponse{
-		ID:        t.id,
-		Title:     t.title,
-		Completed: t.completed,
-		Order:     t.order,
-		Url:       t.url,
+func (t Todo) ToResponse() *TodoResponse {
+	return &TodoResponse{
+		ID:        t.Id,
+		Title:     t.Title,
+		Completed: t.Completed,
+		Order:     t.Order,
+		Url:       t.Url,
 	}
 }
