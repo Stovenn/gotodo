@@ -28,19 +28,16 @@ func (t *todoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 		handleError(w, err)
 		return
 	}
+	withJSON(w, http.StatusCreated, response)
+}
 
-	b, err := json.Marshal(&response)
+func (t *todoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
+	response, err := t.S.ListTodos()
 	if err != nil {
 		handleError(w, err)
 		return
 	}
-	w.WriteHeader(201)
-	w.Write(b)
-}
-
-func (t *todoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
-	//TODO
-	panic("implement me")
+	withJSON(w, http.StatusOK, response...)
 }
 
 func (t *todoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
@@ -61,4 +58,15 @@ func (t *todoHandler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 func handleError(w http.ResponseWriter, err error) {
 	w.WriteHeader(500)
 	w.Write([]byte(err.Error()))
+}
+
+func withJSON(w http.ResponseWriter, statusCode int, response ...*domain.TodoResponse) {
+	b, err := json.Marshal(&response)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(b)
 }

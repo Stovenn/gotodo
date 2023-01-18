@@ -14,6 +14,6 @@ build:vet
 	go build -o $(cmd) cmd/$(cmd)/main.go
 
 run:build
-	./$(app)
+	./httpserver
 
-.PHONY: fmt lint vet build
+.PHONY: fmt lint vet build run

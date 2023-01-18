@@ -1,7 +1,7 @@
 package domain
 
 type Todo struct {
-	Id        string
+	ID        string
 	Title     string
 	Completed bool
 	Order     int
@@ -34,7 +34,7 @@ type TodoPartialUpdateRequest struct {
 
 func (t Todo) ToResponse() *TodoResponse {
 	return &TodoResponse{
-		ID:        t.Id,
+		ID:        t.ID,
 		Title:     t.Title,
 		Completed: t.Completed,
 		Order:     t.Order,

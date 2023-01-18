@@ -25,6 +25,7 @@ func main() {
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
 	todoRoutes.HandleFunc("/", handler.HandleCreateTodo).Methods("POST")
+	todoRoutes.HandleFunc("/", handler.HandleListTodo).Methods("GET")
 
 	server := &http.Server{
 		Addr:         serverPort,
