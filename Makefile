@@ -16,4 +16,7 @@ build:vet
 run:build
 	./httpserver
 
-.PHONY: fmt lint vet build run
+test:
+	go test -v  ./...
+
+.PHONY: fmt lint vet build run test

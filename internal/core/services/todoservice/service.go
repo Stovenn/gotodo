@@ -51,6 +51,5 @@ func (t *todoService) PartiallyUpdateTodo(r domain.TodoPartialUpdateRequest) (*d
 }
 
 func (t *todoService) DeleteTodo(id string) error {
-	//TODO implement me
-	panic("implement me")
+	return t.R.DeleteByID(id)
 }

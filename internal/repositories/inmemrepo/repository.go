@@ -1,8 +1,13 @@
 package inmemrepo
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"github.com/stovenn/gotodo/internal/core/domain"
+)
+
+var (
+	ErrNotFound = errors.New("todo not found")
 )
 
 type todoRepository struct {
@@ -18,8 +23,12 @@ func (r *todoRepository) FindAll() ([]*domain.Todo, error) {
 }
 
 func (r *todoRepository) FindByID(id string) (*domain.Todo, error) {
-	//TODO implement me
-	panic("implement me")
+	for _, todo := range r.db {
+		if todo.ID == id {
+			return todo, nil
+		}
+	}
+	return nil, ErrNotFound
 }
 
 func (r *todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
@@ -30,12 +39,17 @@ func (r *todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
 	return created, nil
 }
 
-func (r *todoRepository) Update(todo domain.Todo) (*domain.Todo, error) {
+func (r *todoRepository) Update(id string, todo domain.Todo) (*domain.Todo, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *todoRepository) DeleteByID(todo domain.Todo) (*domain.Todo, error) {
-	//TODO implement me
-	panic("implement me")
+func (r *todoRepository) DeleteByID(id string) error {
+	for i, todo := range r.db {
+		if todo.ID == id {
+			r.db = append(r.db[:i], r.db[i+1:]...)
+			return nil
+		}
+	}
+	return ErrNotFound
 }

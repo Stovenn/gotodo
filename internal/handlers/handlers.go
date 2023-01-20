@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/internal/core/ports"
 	"net/http"
@@ -51,12 +52,15 @@ func (t *todoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (t *todoHandler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
-	//TODO
-	panic("implement me")
+	todoId := mux.Vars(r)["id"]
+	err := t.S.DeleteTodo(todoId)
+	if err != nil {
+		handleError(w, err)
+	}
 }
 
 func handleError(w http.ResponseWriter, err error) {
-	w.WriteHeader(500)
+	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte(err.Error()))
 }
 

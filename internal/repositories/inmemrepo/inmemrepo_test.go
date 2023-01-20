@@ -63,6 +63,45 @@ func TestTodoRepository_FindAll(t *testing.T) {
 
 	assert.NotEmpty(t, todos)
 	assert.NoError(t, err)
-
 	assert.Equal(t, expected, todos)
+}
+
+func TestTodoRepository_FindByID(t *testing.T) {
+	t.Run("given an id should return a todo item", func(t *testing.T) {
+		todo := createRandomTodo(t)
+		expected := domain.Todo{ID: todo.ID, Title: todo.Title, Order: todo.Order, Completed: todo.Completed, Url: todo.Url}
+
+		foundTodo, err := r.FindByID(todo.ID)
+
+		assert.NotEmpty(t, foundTodo)
+		assert.NoError(t, err)
+		assert.Equal(t, expected.ID, foundTodo.ID)
+		assert.Equal(t, expected.Title, foundTodo.Title)
+		assert.Equal(t, expected.Order, foundTodo.Order)
+		assert.Equal(t, expected.Completed, foundTodo.Completed)
+		assert.Equal(t, expected.Url, foundTodo.Url)
+	})
+
+	t.Run("given an unknown id should not return a todo item", func(t *testing.T) {
+		id := "unknown"
+		notFoundTodo, err := r.FindByID(id)
+
+		assert.Empty(t, notFoundTodo)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "todo not found")
+	})
+}
+
+func TestTodoRepository_DeleteByID(t *testing.T) {
+	newtodo := createRandomTodo(t)
+	err := r.DeleteByID(newtodo.ID)
+
+	assert.NoError(t, err)
+
+	notFoundTodo, err := r.FindByID(newtodo.ID)
+
+	assert.Empty(t, notFoundTodo)
+	assert.Error(t, err)
+	assert.EqualError(t, err, "todo not found")
+
 }

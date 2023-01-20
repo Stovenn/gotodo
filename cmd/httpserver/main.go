@@ -26,6 +26,7 @@ func main() {
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
 	todoRoutes.HandleFunc("/", handler.HandleCreateTodo).Methods("POST")
 	todoRoutes.HandleFunc("/", handler.HandleListTodo).Methods("GET")
+	todoRoutes.HandleFunc("/{id}", handler.HandleDeleteTodo).Methods("DELETE")
 
 	server := &http.Server{
 		Addr:         serverPort,

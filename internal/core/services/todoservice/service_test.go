@@ -10,19 +10,21 @@ import (
 var s *todoService
 
 type todoRepositoryMock struct {
+	calls []string
 	ports.TodoRepository
 }
 
-func (todoRepositoryMock) Create(todo domain.Todo) (*domain.Todo, error) {
+func (r *todoRepositoryMock) Create(todo domain.Todo) (*domain.Todo, error) {
 	return &domain.Todo{ID: "1", Title: todo.Title, Order: 1, Completed: false, Url: ""}, nil
 }
 
-func (todoRepositoryMock) FindAll() ([]*domain.Todo, error) {
-	return []*domain.Todo{
-		{ID: "1", Title: "todo 1", Order: 1, Completed: false, Url: ""},
-		{ID: "2", Title: "todo 2", Order: 2, Completed: false, Url: ""},
-		{ID: "3", Title: "todo 3", Order: 3, Completed: false, Url: ""},
-	}, nil
+func (r *todoRepositoryMock) FindByID(id string) (*domain.Todo, error) {
+	return &domain.Todo{ID: id, Title: "todo 1", Order: 1, Completed: false, Url: ""}, nil
+}
+
+func (r *todoRepositoryMock) DeleteByID(id string) error {
+
+	return nil
 }
 
 func TestTodoService_AddTodo(t *testing.T) {
@@ -60,4 +62,10 @@ func TestTodoService_ListTodos(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, expectedResponse, response)
+}
+
+func TestTodoService_DeleteTodo(t *testing.T) {
+	s = NewTodoService(&todoRepositoryMock{})
+	err := s.DeleteTodo("id")
+	assert.NoError(t, err)
 }

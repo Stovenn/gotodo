@@ -29,27 +29,27 @@ func NewTodoRepository() *todoRepository {
 	return &todoRepository{db: conn}
 }
 
-func (t todoRepository) FindAll() (*domain.Todo, error) {
+func (t *todoRepository) FindAll() ([]*domain.Todo, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t todoRepository) FindByID(id string) (*domain.Todo, error) {
+func (t *todoRepository) FindByID(id string) (*domain.Todo, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
+func (t *todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t todoRepository) Update(todo domain.Todo) (*domain.Todo, error) {
+func (t *todoRepository) Update(id string, todo domain.Todo) (*domain.Todo, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (t todoRepository) DeleteByID(todo domain.Todo) (*domain.Todo, error) {
+func (t *todoRepository) DeleteByID(id string) error {
 	//TODO implement me
 	panic("implement me")
 }

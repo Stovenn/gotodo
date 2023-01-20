@@ -6,6 +6,6 @@ type TodoRepository interface {
 	FindAll() ([]*domain.Todo, error)
 	FindByID(id string) (*domain.Todo, error)
 	Create(todo domain.Todo) (*domain.Todo, error)
-	Update(todo domain.Todo) (*domain.Todo, error)
-	DeleteByID(todo domain.Todo) (*domain.Todo, error)
+	Update(id string, todo domain.Todo) (*domain.Todo, error)
+	DeleteByID(id string) error
 }
