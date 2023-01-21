@@ -88,7 +88,7 @@ func TestTodoRepository_FindByID(t *testing.T) {
 
 		assert.Empty(t, notFoundTodo)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "todo not found")
+		assert.ErrorIs(t, err, ErrNotFound)
 	})
 }
 

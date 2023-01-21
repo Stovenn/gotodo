@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/stovenn/gotodo/internal/core/services/todoservice"
-	"github.com/stovenn/gotodo/internal/handlers"
+	"github.com/stovenn/gotodo/internal/handlers/todohandler"
 	"github.com/stovenn/gotodo/internal/repositories/inmemrepo"
 	"net/http"
 	"os"
@@ -19,13 +19,14 @@ func main() {
 	//branching adapters to ports
 	repository := inmemrepo.NewTodoRepository()
 	service := todoservice.NewTodoService(repository)
-	handler := handlers.NewTodoHandler(service)
+	handler := todohandler.NewTodoHandler(service)
 
 	//configure routes
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
 	todoRoutes.HandleFunc("/", handler.HandleCreateTodo).Methods("POST")
 	todoRoutes.HandleFunc("/", handler.HandleListTodo).Methods("GET")
+	todoRoutes.HandleFunc("/{id}", handler.HandleFindTodoByID).Methods("GET")
 	todoRoutes.HandleFunc("/{id}", handler.HandleDeleteTodo).Methods("DELETE")
 
 	server := &http.Server{

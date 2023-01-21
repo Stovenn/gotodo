@@ -30,6 +30,14 @@ func (t *todoService) ListTodos() ([]*domain.TodoResponse, error) {
 	return todoResponses, nil
 }
 
+func (t *todoService) FindTodoByID(id string) (*domain.TodoResponse, error) {
+	todo, err := t.R.FindByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("todoservice.FindTodoByID: %v", err)
+	}
+	return todo.ToResponse(), nil
+}
+
 func (t *todoService) AddTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error) {
 	todo := domain.Todo{Title: r.Title}
 
@@ -51,5 +59,9 @@ func (t *todoService) PartiallyUpdateTodo(r domain.TodoPartialUpdateRequest) (*d
 }
 
 func (t *todoService) DeleteTodo(id string) error {
-	return t.R.DeleteByID(id)
+	err := t.R.DeleteByID(id)
+	if err != nil {
+		return fmt.Errorf("todoservice.DeleteTodo: %v", err)
+	}
+	return nil
 }

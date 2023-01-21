@@ -40,7 +40,10 @@ func (r *todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
 }
 
 func (r *todoRepository) Update(id string, todo domain.Todo) (*domain.Todo, error) {
-	//TODO implement me
+	panic("implement me")
+}
+
+func (r *todoRepository) FindByOrder(order int) (*domain.Todo, error) {
 	panic("implement me")
 }
 

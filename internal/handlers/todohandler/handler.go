@@ -1,4 +1,4 @@
-package handlers
+package todohandler
 
 import (
 	"encoding/json"
@@ -39,6 +39,16 @@ func (t *todoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	withJSON(w, http.StatusOK, response...)
+}
+
+func (t *todoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
+	todoId := mux.Vars(r)["id"]
+	response, err := t.S.FindTodoByID(todoId)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+	withJSON(w, http.StatusOK, response)
 }
 
 func (t *todoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
