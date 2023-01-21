@@ -40,7 +40,16 @@ func (r *todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
 }
 
 func (r *todoRepository) Update(id string, todo domain.Todo) (*domain.Todo, error) {
-	panic("implement me")
+	todoToUpdate, err := r.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	todoToUpdate.Title = todo.Title
+	todoToUpdate.Completed = todo.Completed
+	todoToUpdate.Order = todo.Order
+	todoToUpdate.Url = todo.Url
+
+	return todoToUpdate, nil
 }
 
 func (r *todoRepository) FindByOrder(order int) (*domain.Todo, error) {
