@@ -1,6 +1,3 @@
-cmd=httpserver
-app=
-
 fmt:
 	go fmt ./...
 

@@ -92,6 +92,25 @@ func TestTodoRepository_FindByID(t *testing.T) {
 	})
 }
 
+func TestTodoRepository_FindByOrder(t *testing.T) {
+	t.Run("given an order should return a todo item", func(t *testing.T) {
+		_ = createRandomTodo(t)
+		todo2 := createRandomTodo(t)
+
+		expected := domain.Todo{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed, Url: todo2.Url}
+
+		foundTodo, err := r.FindByOrder(todo2.Order)
+
+		assert.NotEmpty(t, foundTodo)
+		assert.NoError(t, err)
+		assert.Equal(t, expected.ID, foundTodo.ID)
+		assert.Equal(t, expected.Title, foundTodo.Title)
+		assert.Equal(t, expected.Order, foundTodo.Order)
+		assert.Equal(t, expected.Completed, foundTodo.Completed)
+		assert.Equal(t, expected.Url, foundTodo.Url)
+	})
+}
+
 func TestTodoRepository_DeleteByID(t *testing.T) {
 	newtodo := createRandomTodo(t)
 	err := r.DeleteByID(newtodo.ID)

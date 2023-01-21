@@ -44,7 +44,12 @@ func (r *todoRepository) Update(id string, todo domain.Todo) (*domain.Todo, erro
 }
 
 func (r *todoRepository) FindByOrder(order int) (*domain.Todo, error) {
-	panic("implement me")
+	for _, todo := range r.db {
+		if todo.Order == order {
+			return todo, nil
+		}
+	}
+	return nil, ErrNotFound
 }
 
 func (r *todoRepository) DeleteByID(id string) error {

@@ -75,10 +75,20 @@ func handleError(w http.ResponseWriter, err error) {
 }
 
 func withJSON(w http.ResponseWriter, statusCode int, response ...*domain.TodoResponse) {
-	b, err := json.Marshal(&response)
-	if err != nil {
-		handleError(w, err)
-		return
+	var b []byte
+	var err error
+	if len(response) == 1 {
+		b, err = json.Marshal(&response[0])
+		if err != nil {
+			handleError(w, err)
+			return
+		}
+	} else {
+		b, err = json.Marshal(&response)
+		if err != nil {
+			handleError(w, err)
+			return
+		}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
