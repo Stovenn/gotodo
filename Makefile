@@ -11,12 +11,18 @@ vet:
 	go vet ./...
 
 build:vet
-	go build -o $(cmd) cmd/$(cmd)/main.go
+	go build -o gotodo cmd/gotodo/main.go
 
-run:build
-	./httpserver
+run:
+	./gotodo
 
 test:
 	go test -v  ./...
 
-.PHONY: fmt lint vet build run test
+mock_repo:
+	mockgen -package mockdb -destination internal/repositories/mock/store.go github.com/stovenn/gotodo/internal/core/ports TodoRepository
+
+mock_service:
+	mockgen -package mockservice -destination internal/core/services/todoservice/mock/service.go github.com/stovenn/gotodo/internal/core/ports TodoService
+
+.PHONY: fmt lint vet build run test mock_repo mock_service

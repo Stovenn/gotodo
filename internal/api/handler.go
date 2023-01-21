@@ -1,4 +1,4 @@
-package todohandler
+package api
 
 import (
 	"encoding/json"
@@ -8,15 +8,15 @@ import (
 	"net/http"
 )
 
-type todoHandler struct {
+type Handler struct {
 	S ports.TodoService
 }
 
-func NewTodoHandler(todoService ports.TodoService) *todoHandler {
-	return &todoHandler{S: todoService}
+func NewHandler(todoService ports.TodoService) *Handler {
+	return &Handler{S: todoService}
 }
 
-func (t *todoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 	var request domain.TodoCreationRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -32,7 +32,7 @@ func (t *todoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusCreated, response)
 }
 
-func (t *todoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
 	response, err := t.S.ListTodos()
 	if err != nil {
 		handleError(w, err)
@@ -41,7 +41,7 @@ func (t *todoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusOK, response...)
 }
 
-func (t *todoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
 	todoId := mux.Vars(r)["id"]
 	response, err := t.S.FindTodoByID(todoId)
 	if err != nil {
@@ -51,17 +51,17 @@ func (t *todoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request)
 	withJSON(w, http.StatusOK, response)
 }
 
-func (t *todoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	panic("implement me")
 }
 
-func (t *todoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 	//TODO
 	panic("implement me")
 }
 
-func (t *todoHandler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
+func (t *Handler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	todoId := mux.Vars(r)["id"]
 	err := t.S.DeleteTodo(todoId)
 	if err != nil {
