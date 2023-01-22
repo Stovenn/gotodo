@@ -15,9 +15,9 @@ func init() {
 }
 
 func createRandomTodo(t *testing.T) *domain.Todo {
-	arg := domain.Todo{ID: "", Title: util.RandomString(12), Order: 0, Completed: false, Url: ""}
+	arg := &domain.Todo{ID: "", Title: util.RandomString(12), Order: 0, Completed: false, Url: ""}
 
-	createdTodo, err := r.Create(arg)
+	createdTodo, err := r.Save(arg)
 	expected := &domain.Todo{ID: "", Title: arg.Title, Order: len(r.db), Completed: false, Url: ""}
 
 	assertCreation(t, expected, createdTodo, err)
@@ -25,20 +25,32 @@ func createRandomTodo(t *testing.T) *domain.Todo {
 	return createdTodo
 }
 
-func TestTodoRepository_Create(t *testing.T) {
+func TestTodoRepository_Save(t *testing.T) {
 	t.Cleanup(func() {
 		r.db = []*domain.Todo{}
 	})
-	t.Run("with empty db", func(t *testing.T) {
+	t.Run("creation with empty db", func(t *testing.T) {
 		createRandomTodo(t)
 	})
 
-	t.Run("with existing todos in db", func(t *testing.T) {
+	t.Run("creation with existing todos in db", func(t *testing.T) {
 		r.db = []*domain.Todo{
 			{ID: "1", Title: "todo 1", Order: 1, Completed: false, Url: ""},
 			{ID: "2", Title: "todo 2", Order: 2, Completed: false, Url: ""},
 		}
 		createRandomTodo(t)
+	})
+	t.Run("update", func(t *testing.T) {
+		r.db = []*domain.Todo{
+			{ID: "1", Title: "todo 1", Order: 1, Completed: false, Url: ""},
+			{ID: "2", Title: "todo 2", Order: 2, Completed: false, Url: ""},
+		}
+		arg := &domain.Todo{ID: "1", Title: "updated title", Order: 1, Completed: true, Url: ""}
+
+		updatedTodo, err := r.Save(arg)
+		expected := &domain.Todo{ID: arg.ID, Title: arg.Title, Order: arg.Order, Completed: arg.Completed, Url: arg.Url}
+
+		assertUpdate(t, expected, updatedTodo, err)
 	})
 }
 
@@ -51,6 +63,15 @@ func assertCreation(t *testing.T, expected, got *domain.Todo, err error) {
 	assert.Equal(t, expected.Title, got.Title)
 	assert.Equal(t, expected.Order, got.Order)
 	assert.NotZero(t, got.ID)
+}
+
+func assertUpdate(t *testing.T, expected, got *domain.Todo, err error) {
+	t.Helper()
+
+	assert.NotEmpty(t, got)
+	assert.NoError(t, err)
+
+	assert.Equal(t, expected, got)
 }
 
 func TestTodoRepository_FindAll(t *testing.T) {
@@ -91,38 +112,6 @@ func TestTodoRepository_FindByID(t *testing.T) {
 		assert.Empty(t, notFoundTodo)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrNotFound)
-	})
-}
-
-func TestTodoRepository_Update(t *testing.T) {
-	t.Run("given a todo id and an update should update and return associated todo item", func(t *testing.T) {
-		todo := createRandomTodo(t)
-		update := domain.Todo{Title: "updated", Completed: true, Order: 1, Url: ""}
-		expected := &domain.Todo{ID: todo.ID, Title: update.Title, Completed: update.Completed, Order: update.Order, Url: update.Url}
-
-		updatedTodo, err := r.Update(todo.ID, update)
-		assert.NotEmpty(t, updatedTodo)
-		assert.NoError(t, err)
-
-		foundTodo, err := r.FindByID(todo.ID)
-		assert.NotEmpty(t, foundTodo)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, foundTodo)
-	})
-	t.Run("given a todo id and an update return an ErrNotFound error", func(t *testing.T) {
-		todo := createRandomTodo(t)
-		update := domain.Todo{Title: "updated", Completed: true, Order: 1, Url: ""}
-		expected := &domain.Todo{ID: todo.ID, Title: update.Title, Completed: update.Completed, Order: update.Order, Url: update.Url}
-
-		updatedTodo, err := r.Update("unknown", update)
-		assert.Empty(t, updatedTodo)
-		assert.Error(t, err)
-		assert.ErrorIs(t, err, ErrNotFound)
-
-		foundTodo, err := r.FindByID(todo.ID)
-		assert.NotEmpty(t, foundTodo)
-		assert.NoError(t, err)
-		assert.NotEqual(t, expected, foundTodo)
 	})
 }
 

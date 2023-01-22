@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/internal/core/ports"
@@ -57,8 +58,22 @@ func (t *Handler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (t *Handler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
-	//TODO
-	panic("implement me")
+	var request domain.TodoUpdateRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+	fmt.Println(request)
+	todoID := mux.Vars(r)["id"]
+	response, err := t.S.UpdateTodo(todoID, request)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+	fmt.Println(response)
+	withJSON(w, http.StatusOK, response)
+
 }
 
 func (t *Handler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {

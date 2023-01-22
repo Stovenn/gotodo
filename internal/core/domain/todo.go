@@ -21,9 +21,9 @@ type TodoCreationRequest struct {
 }
 
 type TodoUpdateRequest struct {
-	Title     string `json:"title"`
-	Completed bool   `json:"completed"`
-	Order     int    `json:"order"`
+	Title     string `json:"title" validate:"required"`
+	Completed bool   `json:"completed" validate:"required"`
+	Order     int    `json:"order" validate:"required"`
 }
 
 type TodoPartialUpdateRequest struct {

@@ -19,7 +19,6 @@ import (
 func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 	todoResponse := util.CreateRandomTodoResponse(1)
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	service := mockservice.NewMockTodoService(ctrl)
 	service.EXPECT().
@@ -41,7 +40,6 @@ func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 func TestTodoHandler_HandleListTodo(t *testing.T) {
 	todoResponses := util.CreateRandomTodoResponses(4)
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	service := mockservice.NewMockTodoService(ctrl)
 	service.EXPECT().
@@ -62,7 +60,6 @@ func TestTodoHandler_HandleListTodo(t *testing.T) {
 func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 	todoResponse := util.CreateRandomTodoResponse(1)
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	service := mockservice.NewMockTodoService(ctrl)
 	// build stubs
@@ -83,6 +80,45 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
 	requireBodyMatchTodoResponse(t, recorder.Body, todoResponse)
+}
+
+func TestHandler_HandlePutTodo(t *testing.T) {
+	todoResponse := util.CreateRandomTodoResponse(1)
+	update := domain.TodoUpdateRequest{
+		Title:     "updated todo",
+		Completed: true,
+		Order:     1,
+	}
+	expectedResponse := &domain.TodoResponse{
+		ID:        todoResponse.ID,
+		Title:     update.Title,
+		Completed: update.Completed,
+		Order:     update.Order,
+		Url:       todoResponse.Url,
+	}
+
+	ctrl := gomock.NewController(t)
+	service := mockservice.NewMockTodoService(ctrl)
+	// build stubs
+
+	service.EXPECT().
+		UpdateTodo(todoResponse.ID, update).
+		Times(1).
+		Return(expectedResponse, nil)
+
+	// start test server and send request
+	server := NewServer(NewHandler(service))
+	recorder := httptest.NewRecorder()
+
+	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
+	body := strings.NewReader(`{"title": "updated todo", "order": 1, "completed": true}`)
+	request, err := http.NewRequest(http.MethodPut, url, body)
+	require.NoError(t, err)
+
+	server.router.ServeHTTP(recorder, request)
+	// check response
+	require.Equal(t, http.StatusOK, recorder.Code)
+	requireBodyMatchTodoResponse(t, recorder.Body, expectedResponse)
 }
 
 func requireBodyMatchTodoResponse(t *testing.T, body *bytes.Buffer, expected *domain.TodoResponse) {

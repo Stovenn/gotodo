@@ -39,21 +39,32 @@ func (t *todoService) FindTodoByID(id string) (*domain.TodoResponse, error) {
 }
 
 func (t *todoService) AddTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error) {
-	todo := domain.Todo{Title: r.Title}
+	todo := &domain.Todo{Title: r.Title}
 
-	createdTodo, err := t.R.Create(todo)
+	createdTodo, err := t.R.Save(todo)
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.AddTodo: %v", err)
 	}
 	return createdTodo.ToResponse(), nil
 }
 
-func (t *todoService) UpdateTodo(r domain.TodoUpdateRequest) (*domain.TodoResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (t *todoService) UpdateTodo(id string, r domain.TodoUpdateRequest) (*domain.TodoResponse, error) {
+	foundTodo, err := t.R.FindByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
+	}
+	foundTodo.Title = r.Title
+	foundTodo.Completed = r.Completed
+	foundTodo.Order = r.Order
+
+	updatedTodo, err := t.R.Save(foundTodo)
+	if err != nil {
+		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
+	}
+	return updatedTodo.ToResponse(), nil
 }
 
-func (t *todoService) PartiallyUpdateTodo(r domain.TodoPartialUpdateRequest) (*domain.TodoResponse, error) {
+func (t *todoService) PartiallyUpdateTodo(id string, r domain.TodoPartialUpdateRequest) (*domain.TodoResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }

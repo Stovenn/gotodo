@@ -39,17 +39,18 @@ func (r *todoRepository) Create(todo domain.Todo) (*domain.Todo, error) {
 	return created, nil
 }
 
-func (r *todoRepository) Update(id string, todo domain.Todo) (*domain.Todo, error) {
-	todoToUpdate, err := r.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
-	todoToUpdate.Title = todo.Title
-	todoToUpdate.Completed = todo.Completed
-	todoToUpdate.Order = todo.Order
-	todoToUpdate.Url = todo.Url
+func (r *todoRepository) Save(todo *domain.Todo) (*domain.Todo, error) {
+	if todo.ID == "" {
+		id := uuid.New().String()
+		created := &domain.Todo{ID: id, Title: todo.Title, Order: len(r.db) + 1, Completed: false, Url: ""}
 
-	return todoToUpdate, nil
+		r.db = append(r.db, created)
+		return created, nil
+	} else {
+		found, _ := r.FindByID(todo.ID)
+		found = todo
+		return found, nil
+	}
 }
 
 func (r *todoRepository) FindByOrder(order int) (*domain.Todo, error) {

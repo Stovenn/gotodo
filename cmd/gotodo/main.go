@@ -2,23 +2,28 @@ package main
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"github.com/stovenn/gotodo/internal/api"
 	"github.com/stovenn/gotodo/internal/core/services/todoservice"
 	"github.com/stovenn/gotodo/internal/repositories/inmemrepo"
-	"os"
+	"github.com/stovenn/gotodo/pkg/util"
+	"log"
 )
 
 func main() {
+	err := util.SetupConfig()
+	if err != nil {
+		log.Fatalf("an error occured on the server: %v\n", err)
+	}
 	//branching adapters to ports
 	repository := inmemrepo.NewTodoRepository()
 	service := todoservice.NewTodoService(repository)
 	handler := api.NewHandler(service)
 	server := api.NewServer(handler)
 
-	fmt.Println("Server listening on port :8080")
-	err := server.Start()
+	fmt.Printf("Server listening on port %s\n", viper.Get("PORT"))
+	err = server.Start()
 	if err != nil {
-		fmt.Printf("an error occured on the server: %v", err)
-		os.Exit(1)
+		log.Fatalf("an error occured on the server: %v", err)
 	}
 }

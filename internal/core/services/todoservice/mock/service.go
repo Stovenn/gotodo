@@ -94,31 +94,31 @@ func (mr *MockTodoServiceMockRecorder) ListTodos() *gomock.Call {
 }
 
 // PartiallyUpdateTodo mocks base method.
-func (m *MockTodoService) PartiallyUpdateTodo(arg0 domain.TodoPartialUpdateRequest) (*domain.TodoResponse, error) {
+func (m *MockTodoService) PartiallyUpdateTodo(arg0 string, arg1 domain.TodoPartialUpdateRequest) (*domain.TodoResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PartiallyUpdateTodo", arg0)
+	ret := m.ctrl.Call(m, "PartiallyUpdateTodo", arg0, arg1)
 	ret0, _ := ret[0].(*domain.TodoResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // PartiallyUpdateTodo indicates an expected call of PartiallyUpdateTodo.
-func (mr *MockTodoServiceMockRecorder) PartiallyUpdateTodo(arg0 interface{}) *gomock.Call {
+func (mr *MockTodoServiceMockRecorder) PartiallyUpdateTodo(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PartiallyUpdateTodo", reflect.TypeOf((*MockTodoService)(nil).PartiallyUpdateTodo), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PartiallyUpdateTodo", reflect.TypeOf((*MockTodoService)(nil).PartiallyUpdateTodo), arg0, arg1)
 }
 
 // UpdateTodo mocks base method.
-func (m *MockTodoService) UpdateTodo(arg0 domain.TodoUpdateRequest) (*domain.TodoResponse, error) {
+func (m *MockTodoService) UpdateTodo(arg0 string, arg1 domain.TodoUpdateRequest) (*domain.TodoResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateTodo", arg0)
+	ret := m.ctrl.Call(m, "UpdateTodo", arg0, arg1)
 	ret0, _ := ret[0].(*domain.TodoResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateTodo indicates an expected call of UpdateTodo.
-func (mr *MockTodoServiceMockRecorder) UpdateTodo(arg0 interface{}) *gomock.Call {
+func (mr *MockTodoServiceMockRecorder) UpdateTodo(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTodo", reflect.TypeOf((*MockTodoService)(nil).UpdateTodo), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTodo", reflect.TypeOf((*MockTodoService)(nil).UpdateTodo), arg0, arg1)
 }
