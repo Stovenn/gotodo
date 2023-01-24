@@ -1,9 +1,14 @@
 package todoservice
 
 import (
+	"errors"
 	"fmt"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/internal/core/ports"
+)
+
+var (
+	ErrOrderConflict = errors.New("todo error conflict")
 )
 
 type todoService struct {
@@ -55,6 +60,9 @@ func (t *todoService) UpdateTodo(id string, r domain.TodoUpdateRequest) (*domain
 	}
 	foundTodo.Title = r.Title
 	foundTodo.Completed = r.Completed
+	if t.isOrderConflict(r.Order, foundTodo.ID) {
+		return nil, fmt.Errorf("todoservice.PartiallyUpdateTodo: %v", ErrOrderConflict)
+	}
 	foundTodo.Order = r.Order
 
 	updatedTodo, err := t.R.Save(foundTodo)
@@ -65,8 +73,26 @@ func (t *todoService) UpdateTodo(id string, r domain.TodoUpdateRequest) (*domain
 }
 
 func (t *todoService) PartiallyUpdateTodo(id string, r domain.TodoPartialUpdateRequest) (*domain.TodoResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	foundTodo, err := t.R.FindByID(id)
+	if err != nil {
+		return nil, fmt.Errorf("todoservice.PartiallyUpdateTodo: %v", err)
+	}
+	if r.Title != "" {
+		foundTodo.Title = r.Title
+	}
+	foundTodo.Completed = r.Completed
+	if r.Order != 0 {
+		if t.isOrderConflict(r.Order, foundTodo.ID) {
+			return nil, fmt.Errorf("todoservice.PartiallyUpdateTodo: %v", err)
+		}
+		foundTodo.Order = r.Order
+	}
+
+	updatedTodo, err := t.R.Save(foundTodo)
+	if err != nil {
+		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
+	}
+	return updatedTodo.ToResponse(), nil
 }
 
 func (t *todoService) DeleteTodo(id string) error {
@@ -75,4 +101,12 @@ func (t *todoService) DeleteTodo(id string) error {
 		return fmt.Errorf("todoservice.DeleteTodo: %v", err)
 	}
 	return nil
+}
+
+func (t *todoService) isOrderConflict(order int, updatedTodoID string) bool {
+	foundTodo, _ := t.R.FindByOrder(order)
+	if foundTodo != nil && foundTodo.ID != updatedTodoID {
+		return true
+	}
+	return false
 }

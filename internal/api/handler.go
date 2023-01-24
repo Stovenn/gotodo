@@ -52,11 +52,6 @@ func (t *Handler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusOK, response)
 }
 
-func (t *Handler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
-	//TODO
-	panic("implement me")
-}
-
 func (t *Handler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 	var request domain.TodoUpdateRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -73,7 +68,24 @@ func (t *Handler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(response)
 	withJSON(w, http.StatusOK, response)
+}
 
+func (t *Handler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
+	var request domain.TodoPartialUpdateRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+	fmt.Println(request)
+	todoID := mux.Vars(r)["id"]
+	response, err := t.S.PartiallyUpdateTodo(todoID, request)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+	fmt.Println(response)
+	withJSON(w, http.StatusOK, response)
 }
 
 func (t *Handler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {

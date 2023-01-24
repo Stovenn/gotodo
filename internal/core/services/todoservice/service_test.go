@@ -105,11 +105,37 @@ func TestTodoService_UpdateTodo(t *testing.T) {
 	repository := mockdb.NewMockTodoRepository(ctrl)
 	s = NewTodoService(repository)
 
-	findCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
-	updateCall := repository.EXPECT().Save(updatedTodo).Times(1).Return(updatedTodo, nil)
-	gomock.InOrder(findCall, updateCall)
+	findByIDCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
+	findByOrderCall := repository.EXPECT().FindByOrder(updateRequest.Order).Times(1).Return(nil, nil)
+	saveCall := repository.EXPECT().Save(updatedTodo).Times(1).Return(updatedTodo, nil)
+	gomock.InOrder(findByIDCall, findByOrderCall, saveCall)
 
 	response, err := s.UpdateTodo(todo.ID, updateRequest)
+
+	assert.NotEmpty(t, response)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, response)
+}
+
+func TestTodoService_PartiallyUpdateTodo(t *testing.T) {
+	todo := util.CreateRandomTodo(1)
+	updateRequest := domain.TodoPartialUpdateRequest{Order: 2}
+	todoUpdate := domain.Todo{Title: updateRequest.Title, Completed: updateRequest.Completed, Order: updateRequest.Order}
+
+	updatedTodo := &domain.Todo{ID: todo.ID, Title: todo.Title, Completed: todo.Completed, Order: todoUpdate.Order, Url: todo.Url}
+
+	expected := updatedTodo.ToResponse()
+
+	ctrl := gomock.NewController(t)
+	repository := mockdb.NewMockTodoRepository(ctrl)
+	s = NewTodoService(repository)
+
+	findByIDCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
+	findByOrderCall := repository.EXPECT().FindByOrder(updateRequest.Order).Times(1).Return(nil, nil)
+	saveCall := repository.EXPECT().Save(updatedTodo).Times(1).Return(updatedTodo, nil)
+	gomock.InOrder(findByIDCall, findByOrderCall, saveCall)
+
+	response, err := s.PartiallyUpdateTodo(todo.ID, updateRequest)
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)

@@ -13,11 +13,12 @@ type Server struct {
 func NewServer(handler *Handler) *Server {
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
-	todoRoutes.HandleFunc("/", handler.HandleCreateTodo).Methods("POST")
-	todoRoutes.HandleFunc("/", handler.HandleListTodo).Methods("GET")
-	todoRoutes.HandleFunc("/{id}", handler.HandleFindTodoByID).Methods("GET")
-	todoRoutes.HandleFunc("/{id}", handler.HandlePutTodo).Methods("PUT")
-	todoRoutes.HandleFunc("/{id}", handler.HandleDeleteTodo).Methods("DELETE")
+	todoRoutes.HandleFunc("/", handler.HandleCreateTodo).Methods(http.MethodPost)
+	todoRoutes.HandleFunc("/", handler.HandleListTodo).Methods(http.MethodGet)
+	todoRoutes.HandleFunc("/{id}", handler.HandleFindTodoByID).Methods(http.MethodGet)
+	todoRoutes.HandleFunc("/{id}", handler.HandlePutTodo).Methods(http.MethodPut)
+	todoRoutes.HandleFunc("/{id}", handler.HandlePatchTodo).Methods(http.MethodPatch)
+	todoRoutes.HandleFunc("/{id}", handler.HandleDeleteTodo).Methods(http.MethodDelete)
 
 	return &Server{router: r}
 }

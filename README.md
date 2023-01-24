@@ -35,7 +35,7 @@ PUT  http://localhost:8080/api/todos/{id}
   "order": 2,
 }
 ```
-### Partially update a todo (not implemented)
+### Partially update a todo
 PATCH  http://localhost:8080/api/todos/{id}
 ```
 {

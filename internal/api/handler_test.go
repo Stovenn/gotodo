@@ -121,6 +121,61 @@ func TestHandler_HandlePutTodo(t *testing.T) {
 	requireBodyMatchTodoResponse(t, recorder.Body, expectedResponse)
 }
 
+func TestHandler_HandlePatchTodo(t *testing.T) {
+	todoResponse := util.CreateRandomTodoResponse(1)
+	update := domain.TodoPartialUpdateRequest{
+		Order: 2,
+	}
+	expectedResponse := &domain.TodoResponse{
+		ID:        todoResponse.ID,
+		Title:     todoResponse.Title,
+		Completed: todoResponse.Completed,
+		Order:     update.Order,
+		Url:       todoResponse.Url,
+	}
+
+	ctrl := gomock.NewController(t)
+	service := mockservice.NewMockTodoService(ctrl)
+	// build stubs
+	service.EXPECT().
+		PartiallyUpdateTodo(todoResponse.ID, update).
+		Times(1).
+		Return(expectedResponse, nil)
+
+	// start test server and send request
+	server := NewServer(NewHandler(service))
+	recorder := httptest.NewRecorder()
+
+	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
+	body := strings.NewReader(`{"order": 2}`)
+	request, err := http.NewRequest(http.MethodPatch, url, body)
+	require.NoError(t, err)
+
+	server.router.ServeHTTP(recorder, request)
+	// check response
+	require.Equal(t, http.StatusOK, recorder.Code)
+	requireBodyMatchTodoResponse(t, recorder.Body, expectedResponse)
+}
+
+func TestHandler_HandleDeleteTodo(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	service := mockservice.NewMockTodoService(ctrl)
+	// build stubs
+	service.EXPECT().DeleteTodo(gomock.Any()).Times(1).Return(nil)
+
+	// start test server and send request
+	server := NewServer(NewHandler(service))
+	recorder := httptest.NewRecorder()
+
+	url := fmt.Sprintf("/api/todos/%s", "1")
+	request, err := http.NewRequest(http.MethodDelete, url, nil)
+	require.NoError(t, err)
+
+	server.router.ServeHTTP(recorder, request)
+	// check response
+	require.Equal(t, http.StatusOK, recorder.Code)
+}
+
 func requireBodyMatchTodoResponse(t *testing.T, body *bytes.Buffer, expected *domain.TodoResponse) {
 	b, err := io.ReadAll(body)
 	require.NoError(t, err)

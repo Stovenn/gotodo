@@ -27,9 +27,9 @@ type TodoUpdateRequest struct {
 }
 
 type TodoPartialUpdateRequest struct {
-	Title     string `json:"title omitempty"`
-	Completed bool   `json:"completed omitempty"`
-	Order     int    `json:"order omitempty"`
+	Title     string `json:"title"`
+	Completed bool   `json:"completed"`
+	Order     int    `json:"order"`
 }
 
 func (t Todo) ToResponse() *TodoResponse {
