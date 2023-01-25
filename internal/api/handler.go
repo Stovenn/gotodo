@@ -59,7 +59,6 @@ func (t *Handler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 		handleError(w, err)
 		return
 	}
-	fmt.Println(request)
 	todoID := mux.Vars(r)["id"]
 	response, err := t.S.UpdateTodo(todoID, request)
 	if err != nil {

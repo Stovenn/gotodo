@@ -94,7 +94,7 @@ func TestHandler_HandlePutTodo(t *testing.T) {
 		Title:     update.Title,
 		Completed: update.Completed,
 		Order:     update.Order,
-		Url:       todoResponse.Url,
+		URL:       todoResponse.URL,
 	}
 
 	ctrl := gomock.NewController(t)
@@ -131,7 +131,7 @@ func TestHandler_HandlePatchTodo(t *testing.T) {
 		Title:     todoResponse.Title,
 		Completed: todoResponse.Completed,
 		Order:     update.Order,
-		Url:       todoResponse.Url,
+		URL:       todoResponse.URL,
 	}
 
 	ctrl := gomock.NewController(t)

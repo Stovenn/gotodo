@@ -25,5 +25,4 @@ func NewServer(handler *Handler) *Server {
 
 func (server Server) Start() error {
 	return http.ListenAndServe(":"+viper.GetString("PORT"), server.router)
-
 }

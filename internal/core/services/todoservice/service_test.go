@@ -17,7 +17,7 @@ func TestTodoService_AddTodo(t *testing.T) {
 	arg := domain.TodoCreationRequest{
 		Title: "new todo",
 	}
-	todo := &domain.Todo{Title: arg.Title, Completed: false, Order: 1, Url: ""}
+	todo := &domain.Todo{Title: arg.Title, Completed: false, Order: 1, URL: ""}
 	expectedResponse := todo.ToResponse()
 
 	ctrl := gomock.NewController(t)
@@ -97,7 +97,7 @@ func TestTodoService_UpdateTodo(t *testing.T) {
 	updateRequest := domain.TodoUpdateRequest{Title: "updated title", Completed: true, Order: 2}
 	todoUpdate := domain.Todo{Title: updateRequest.Title, Completed: updateRequest.Completed, Order: updateRequest.Order}
 
-	updatedTodo := &domain.Todo{ID: todo.ID, Title: todoUpdate.Title, Completed: todoUpdate.Completed, Order: todoUpdate.Order, Url: todo.Url}
+	updatedTodo := &domain.Todo{ID: todo.ID, Title: todoUpdate.Title, Completed: todoUpdate.Completed, Order: todoUpdate.Order, URL: todo.URL}
 
 	expected := updatedTodo.ToResponse()
 
@@ -122,7 +122,7 @@ func TestTodoService_PartiallyUpdateTodo(t *testing.T) {
 	updateRequest := domain.TodoPartialUpdateRequest{Order: 2}
 	todoUpdate := domain.Todo{Title: updateRequest.Title, Completed: updateRequest.Completed, Order: updateRequest.Order}
 
-	updatedTodo := &domain.Todo{ID: todo.ID, Title: todo.Title, Completed: todo.Completed, Order: todoUpdate.Order, Url: todo.Url}
+	updatedTodo := &domain.Todo{ID: todo.ID, Title: todo.Title, Completed: todo.Completed, Order: todoUpdate.Order, URL: todo.URL}
 
 	expected := updatedTodo.ToResponse()
 

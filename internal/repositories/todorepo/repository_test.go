@@ -11,9 +11,9 @@ package todorepo
 //}
 //
 //func createTodo(t *testing.T) *domain.Todo {
-//	arg := domain.Todo{ID: "", Title: util.RandomString(15), Order: 0, Completed: false, Url: ""}
+//	arg := domain.Todo{ID: "", Title: util.RandomString(15), Order: 0, Completed: false, URL: ""}
 //	createdTodo, err := r.Create(arg)
-//	expected := &domain.Todo{ID: "", Title: "new todo", Order: , Completed: false, Url: ""}
+//	expected := &domain.Todo{ID: "", Title: "new todo", Order: , Completed: false, URL: ""}
 //
 //	assertCreation(t, expected, createdTodo, err)
 //
