@@ -34,7 +34,7 @@ func (r *todoRepository) FindByID(id string) (*domain.Todo, error) {
 func (r *todoRepository) Save(todo *domain.Todo) (*domain.Todo, error) {
 	if todo.ID == "" {
 		id := uuid.New().String()
-		created := &domain.Todo{ID: id, Title: todo.Title, Order: len(r.db) + 1, Completed: false, URL: ""}
+		created := &domain.Todo{ID: id, Title: todo.Title, Order: len(r.db) + 1, Completed: false}
 
 		r.db = append(r.db, created)
 		return created, nil

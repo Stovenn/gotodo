@@ -34,7 +34,6 @@ func CreateRandomTodo(order int) *domain.Todo {
 		Title:     RandomString(25),
 		Order:     order,
 		Completed: false,
-		URL:       RandomString(50),
 	}
 }
 

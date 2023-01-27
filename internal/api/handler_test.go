@@ -22,7 +22,7 @@ func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 
 	service := mockservice.NewMockTodoService(ctrl)
 	service.EXPECT().
-		AddTodo(gomock.Any()).
+		CreateTodo(gomock.Any()).
 		Times(1).
 		Return(todoResponse, nil)
 
@@ -43,7 +43,7 @@ func TestTodoHandler_HandleListTodo(t *testing.T) {
 
 	service := mockservice.NewMockTodoService(ctrl)
 	service.EXPECT().
-		ListTodos().
+		DisplayAllTodos().
 		Times(1).
 		Return(todoResponses, nil)
 
@@ -64,7 +64,7 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 	service := mockservice.NewMockTodoService(ctrl)
 	// build stubs
 	service.EXPECT().
-		FindTodoByID(todoResponse.ID).
+		DisplayTodo(todoResponse.ID).
 		Times(1).
 		Return(todoResponse, nil)
 

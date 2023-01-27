@@ -13,11 +13,11 @@ import (
 
 var s ports.TodoService
 
-func TestTodoService_AddTodo(t *testing.T) {
+func TestTodoService_CreateTodo(t *testing.T) {
 	arg := domain.TodoCreationRequest{
 		Title: "new todo",
 	}
-	todo := &domain.Todo{Title: arg.Title, Completed: false, Order: 1, URL: ""}
+	todo := &domain.Todo{Title: arg.Title, Completed: false, Order: 1}
 	expectedResponse := todo.ToResponse()
 
 	ctrl := gomock.NewController(t)
@@ -29,14 +29,14 @@ func TestTodoService_AddTodo(t *testing.T) {
 		Times(1).
 		Return(todo, nil)
 
-	response, err := s.AddTodo(arg)
+	response, err := s.CreateTodo(arg)
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedResponse, response)
 }
 
-func TestTodoService_ListTodos(t *testing.T) {
+func TestTodoService_DisplayAllTodos(t *testing.T) {
 	todos := util.CreateRandomTodos(3)
 
 	ctrl := gomock.NewController(t)
@@ -48,14 +48,14 @@ func TestTodoService_ListTodos(t *testing.T) {
 		Times(1).
 		Return(todos, nil)
 
-	response, err := s.ListTodos()
+	response, err := s.DisplayAllTodos()
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)
 	assert.Equal(t, len(todos), len(response))
 }
 
-func TestTodoService_FindTodoByID(t *testing.T) {
+func TestTodoService_DisplayTodo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
 	s = NewTodoService(repository)
@@ -69,7 +69,7 @@ func TestTodoService_FindTodoByID(t *testing.T) {
 			Times(1).
 			Return(todo, nil)
 
-		response, err := s.FindTodoByID(todo.ID)
+		response, err := s.DisplayTodo(todo.ID)
 
 		assert.NotEmpty(t, response)
 		assert.NoError(t, err)
@@ -84,11 +84,11 @@ func TestTodoService_FindTodoByID(t *testing.T) {
 			Times(1).
 			Return(nil, fmt.Errorf("todo not found"))
 
-		response, err := s.FindTodoByID(id)
+		response, err := s.DisplayTodo(id)
 
 		assert.Empty(t, response)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "todoservice.FindTodoByID: todo not found")
+		assert.EqualError(t, err, "todoservice.DisplayTodo: todo not found")
 	})
 }
 
@@ -97,7 +97,7 @@ func TestTodoService_UpdateTodo(t *testing.T) {
 	updateRequest := domain.TodoUpdateRequest{Title: "updated title", Completed: true, Order: 2}
 	todoUpdate := domain.Todo{Title: updateRequest.Title, Completed: updateRequest.Completed, Order: updateRequest.Order}
 
-	updatedTodo := &domain.Todo{ID: todo.ID, Title: todoUpdate.Title, Completed: todoUpdate.Completed, Order: todoUpdate.Order, URL: todo.URL}
+	updatedTodo := &domain.Todo{ID: todo.ID, Title: todoUpdate.Title, Completed: todoUpdate.Completed, Order: todoUpdate.Order}
 
 	expected := updatedTodo.ToResponse()
 
@@ -122,7 +122,7 @@ func TestTodoService_PartiallyUpdateTodo(t *testing.T) {
 	updateRequest := domain.TodoPartialUpdateRequest{Order: 2}
 	todoUpdate := domain.Todo{Title: updateRequest.Title, Completed: updateRequest.Completed, Order: updateRequest.Order}
 
-	updatedTodo := &domain.Todo{ID: todo.ID, Title: todo.Title, Completed: todo.Completed, Order: todoUpdate.Order, URL: todo.URL}
+	updatedTodo := &domain.Todo{ID: todo.ID, Title: todo.Title, Completed: todo.Completed, Order: todoUpdate.Order}
 
 	expected := updatedTodo.ToResponse()
 
@@ -170,6 +170,6 @@ func TestTodoService_DeleteTodo(t *testing.T) {
 		err := s.DeleteTodo(id)
 
 		assert.Error(t, err)
-		assert.EqualError(t, err, "todoservice.DeleteTodo: todo not found")
+		assert.EqualError(t, err, "todoservice.DeleteOneTodo: todo not found")
 	})
 }

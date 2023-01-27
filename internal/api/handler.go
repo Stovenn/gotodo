@@ -25,7 +25,7 @@ func (t *Handler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := t.S.AddTodo(request)
+	response, err := t.S.CreateTodo(request)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -34,7 +34,7 @@ func (t *Handler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (t *Handler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
-	response, err := t.S.ListTodos()
+	response, err := t.S.DisplayAllTodos()
 	if err != nil {
 		handleError(w, err)
 		return
@@ -44,7 +44,7 @@ func (t *Handler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
 
 func (t *Handler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
 	todoId := mux.Vars(r)["id"]
-	response, err := t.S.FindTodoByID(todoId)
+	response, err := t.S.DisplayTodo(todoId)
 	if err != nil {
 		handleError(w, err)
 		return

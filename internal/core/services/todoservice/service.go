@@ -19,7 +19,7 @@ func NewTodoService(r ports.TodoRepository) *todoService {
 	return &todoService{R: r}
 }
 
-func (t *todoService) ListTodos() ([]*domain.TodoResponse, error) {
+func (t *todoService) DisplayAllTodos() ([]*domain.TodoResponse, error) {
 	todos, err := t.R.FindAll()
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.ListTodo: %v", err)
@@ -35,20 +35,20 @@ func (t *todoService) ListTodos() ([]*domain.TodoResponse, error) {
 	return todoResponses, nil
 }
 
-func (t *todoService) FindTodoByID(id string) (*domain.TodoResponse, error) {
+func (t *todoService) DisplayTodo(id string) (*domain.TodoResponse, error) {
 	todo, err := t.R.FindByID(id)
 	if err != nil {
-		return nil, fmt.Errorf("todoservice.FindTodoByID: %v", err)
+		return nil, fmt.Errorf("todoservice.DisplayTodo: %v", err)
 	}
 	return todo.ToResponse(), nil
 }
 
-func (t *todoService) AddTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error) {
+func (t *todoService) CreateTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error) {
 	todo := &domain.Todo{Title: r.Title}
 
 	createdTodo, err := t.R.Save(todo)
 	if err != nil {
-		return nil, fmt.Errorf("todoservice.AddTodo: %v", err)
+		return nil, fmt.Errorf("todoservice.CreateTodo: %v", err)
 	}
 	return createdTodo.ToResponse(), nil
 }
@@ -98,9 +98,13 @@ func (t *todoService) PartiallyUpdateTodo(id string, r domain.TodoPartialUpdateR
 func (t *todoService) DeleteTodo(id string) error {
 	err := t.R.DeleteByID(id)
 	if err != nil {
-		return fmt.Errorf("todoservice.DeleteTodo: %v", err)
+		return fmt.Errorf("todoservice.DeleteOneTodo: %v", err)
 	}
 	return nil
+}
+
+func (t *todoService) DeleteAllTodos() error {
+	panic("implement me")
 }
 
 func (t *todoService) isOrderConflict(order int, updatedTodoID string) bool {

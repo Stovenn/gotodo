@@ -6,7 +6,6 @@ type Todo struct {
 	Title     string
 	Completed bool
 	Order     int
-	URL       string
 }
 
 // TodoResponse is the struct
@@ -45,6 +44,5 @@ func (t Todo) ToResponse() *TodoResponse {
 		Title:     t.Title,
 		Completed: t.Completed,
 		Order:     t.Order,
-		URL:       t.URL,
 	}
 }

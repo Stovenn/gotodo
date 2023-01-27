@@ -15,10 +15,10 @@ func init() {
 }
 
 func createRandomTodo(t *testing.T) *domain.Todo {
-	arg := &domain.Todo{ID: "", Title: util.RandomString(12), Order: 0, Completed: false, URL: ""}
+	arg := &domain.Todo{ID: "", Title: util.RandomString(12), Order: 0, Completed: false}
 
 	createdTodo, err := r.Save(arg)
-	expected := &domain.Todo{ID: "", Title: arg.Title, Order: len(r.db), Completed: false, URL: ""}
+	expected := &domain.Todo{ID: "", Title: arg.Title, Order: len(r.db), Completed: false}
 
 	assertCreation(t, expected, createdTodo, err)
 
@@ -35,20 +35,20 @@ func TestTodoRepository_Save(t *testing.T) {
 
 	t.Run("creation with existing todos in db", func(t *testing.T) {
 		r.db = []*domain.Todo{
-			{ID: "1", Title: "todo 1", Order: 1, Completed: false, URL: ""},
-			{ID: "2", Title: "todo 2", Order: 2, Completed: false, URL: ""},
+			{ID: "1", Title: "todo 1", Order: 1, Completed: false},
+			{ID: "2", Title: "todo 2", Order: 2, Completed: false},
 		}
 		createRandomTodo(t)
 	})
 	t.Run("update", func(t *testing.T) {
 		r.db = []*domain.Todo{
-			{ID: "1", Title: "todo 1", Order: 1, Completed: false, URL: ""},
-			{ID: "2", Title: "todo 2", Order: 2, Completed: false, URL: ""},
+			{ID: "1", Title: "todo 1", Order: 1, Completed: false},
+			{ID: "2", Title: "todo 2", Order: 2, Completed: false},
 		}
-		arg := &domain.Todo{ID: "1", Title: "updated title", Order: 1, Completed: true, URL: ""}
+		arg := &domain.Todo{ID: "1", Title: "updated title", Order: 1, Completed: true}
 
 		updatedTodo, err := r.Save(arg)
-		expected := &domain.Todo{ID: arg.ID, Title: arg.Title, Order: arg.Order, Completed: arg.Completed, URL: arg.URL}
+		expected := &domain.Todo{ID: arg.ID, Title: arg.Title, Order: arg.Order, Completed: arg.Completed}
 
 		assertUpdate(t, expected, updatedTodo, err)
 	})
@@ -79,8 +79,8 @@ func TestTodoRepository_FindAll(t *testing.T) {
 	todo2 := createRandomTodo(t)
 
 	expected := []*domain.Todo{
-		{ID: todo1.ID, Title: todo1.Title, Order: todo1.Order, Completed: todo1.Completed, URL: todo1.URL},
-		{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed, URL: todo2.URL},
+		{ID: todo1.ID, Title: todo1.Title, Order: todo1.Order, Completed: todo1.Completed},
+		{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed},
 	}
 
 	todos, err := r.FindAll()
@@ -96,7 +96,7 @@ func TestTodoRepository_FindByID(t *testing.T) {
 	})
 	t.Run("given a todo id should return associated todo item", func(t *testing.T) {
 		todo := createRandomTodo(t)
-		expected := &domain.Todo{ID: todo.ID, Title: todo.Title, Order: todo.Order, Completed: todo.Completed, URL: todo.URL}
+		expected := &domain.Todo{ID: todo.ID, Title: todo.Title, Order: todo.Order, Completed: todo.Completed}
 
 		foundTodo, err := r.FindByID(todo.ID)
 
@@ -124,7 +124,7 @@ func TestTodoRepository_FindByOrder(t *testing.T) {
 		_ = createRandomTodo(t)
 		todo2 := createRandomTodo(t)
 
-		expected := &domain.Todo{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed, URL: todo2.URL}
+		expected := &domain.Todo{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed}
 
 		foundTodo, err := r.FindByOrder(todo2.Order)
 

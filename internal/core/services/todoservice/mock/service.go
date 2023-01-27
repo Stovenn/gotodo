@@ -34,19 +34,33 @@ func (m *MockTodoService) EXPECT() *MockTodoServiceMockRecorder {
 	return m.recorder
 }
 
-// AddTodo mocks base method.
-func (m *MockTodoService) AddTodo(arg0 domain.TodoCreationRequest) (*domain.TodoResponse, error) {
+// CreateTodo mocks base method.
+func (m *MockTodoService) CreateTodo(arg0 domain.TodoCreationRequest) (*domain.TodoResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddTodo", arg0)
+	ret := m.ctrl.Call(m, "CreateTodo", arg0)
 	ret0, _ := ret[0].(*domain.TodoResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// AddTodo indicates an expected call of AddTodo.
-func (mr *MockTodoServiceMockRecorder) AddTodo(arg0 interface{}) *gomock.Call {
+// CreateTodo indicates an expected call of CreateTodo.
+func (mr *MockTodoServiceMockRecorder) CreateTodo(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTodo", reflect.TypeOf((*MockTodoService)(nil).AddTodo), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTodo", reflect.TypeOf((*MockTodoService)(nil).CreateTodo), arg0)
+}
+
+// DeleteAllTodos mocks base method.
+func (m *MockTodoService) DeleteAllTodos() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteAllTodos")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteAllTodos indicates an expected call of DeleteAllTodos.
+func (mr *MockTodoServiceMockRecorder) DeleteAllTodos() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAllTodos", reflect.TypeOf((*MockTodoService)(nil).DeleteAllTodos))
 }
 
 // DeleteTodo mocks base method.
@@ -63,34 +77,34 @@ func (mr *MockTodoServiceMockRecorder) DeleteTodo(arg0 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTodo", reflect.TypeOf((*MockTodoService)(nil).DeleteTodo), arg0)
 }
 
-// FindTodoByID mocks base method.
-func (m *MockTodoService) FindTodoByID(arg0 string) (*domain.TodoResponse, error) {
+// DisplayAllTodos mocks base method.
+func (m *MockTodoService) DisplayAllTodos() ([]*domain.TodoResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindTodoByID", arg0)
-	ret0, _ := ret[0].(*domain.TodoResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindTodoByID indicates an expected call of FindTodoByID.
-func (mr *MockTodoServiceMockRecorder) FindTodoByID(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindTodoByID", reflect.TypeOf((*MockTodoService)(nil).FindTodoByID), arg0)
-}
-
-// ListTodos mocks base method.
-func (m *MockTodoService) ListTodos() ([]*domain.TodoResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTodos")
+	ret := m.ctrl.Call(m, "DisplayAllTodos")
 	ret0, _ := ret[0].([]*domain.TodoResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListTodos indicates an expected call of ListTodos.
-func (mr *MockTodoServiceMockRecorder) ListTodos() *gomock.Call {
+// DisplayAllTodos indicates an expected call of DisplayAllTodos.
+func (mr *MockTodoServiceMockRecorder) DisplayAllTodos() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTodos", reflect.TypeOf((*MockTodoService)(nil).ListTodos))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisplayAllTodos", reflect.TypeOf((*MockTodoService)(nil).DisplayAllTodos))
+}
+
+// DisplayTodo mocks base method.
+func (m *MockTodoService) DisplayTodo(arg0 string) (*domain.TodoResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DisplayTodo", arg0)
+	ret0, _ := ret[0].(*domain.TodoResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DisplayTodo indicates an expected call of DisplayTodo.
+func (mr *MockTodoServiceMockRecorder) DisplayTodo(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisplayTodo", reflect.TypeOf((*MockTodoService)(nil).DisplayTodo), arg0)
 }
 
 // PartiallyUpdateTodo mocks base method.
