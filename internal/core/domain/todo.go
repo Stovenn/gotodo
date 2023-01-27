@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"fmt"
+	"github.com/spf13/viper"
+)
+
 // Todo is the representation of a item
 type Todo struct {
 	ID        string
@@ -44,5 +49,6 @@ func (t Todo) ToResponse() *TodoResponse {
 		Title:     t.Title,
 		Completed: t.Completed,
 		Order:     t.Order,
+		URL:       fmt.Sprintf("http://%s:%s/api/todos/%s", viper.Get("HOST"), viper.Get("PORT"), t.ID),
 	}
 }
