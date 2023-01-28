@@ -46,7 +46,7 @@ func (t *todoService) DisplayTodo(id string) (*domain.TodoResponse, error) {
 func (t *todoService) CreateTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error) {
 	todo := &domain.Todo{Title: r.Title}
 
-	createdTodo, err := t.R.Save(todo)
+	createdTodo, err := t.R.Create(todo)
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.CreateTodo: %v", err)
 	}
@@ -65,7 +65,7 @@ func (t *todoService) UpdateTodo(id string, r domain.TodoUpdateRequest) (*domain
 	}
 	foundTodo.Order = r.Order
 
-	updatedTodo, err := t.R.Save(foundTodo)
+	updatedTodo, err := t.R.Update(foundTodo)
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
 	}
@@ -88,7 +88,7 @@ func (t *todoService) PartiallyUpdateTodo(id string, r domain.TodoPartialUpdateR
 		foundTodo.Order = r.Order
 	}
 
-	updatedTodo, err := t.R.Save(foundTodo)
+	updatedTodo, err := t.R.Update(foundTodo)
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
 	}

@@ -11,12 +11,13 @@ import (
 )
 
 func main() {
-	err := util.SetupConfig()
+	config, err := util.SetupConfig(".")
 	if err != nil {
-		log.Fatalf("an error occured on the server: %v\n", err)
+		log.Fatalf("cannot load config: %v\n", err)
 	}
+
 	//branching adapters to ports
-	repository := psqlrepo.NewTodoRepository()
+	repository := psqlrepo.NewTodoRepository(config.DBDriver, config.DBURL)
 	service := todoservice.NewTodoService(repository)
 	handler := api.NewHandler(service)
 	server := api.NewServer(handler)

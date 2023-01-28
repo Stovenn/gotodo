@@ -1,7 +1,6 @@
 package inmemrepo
 
 import (
-	"fmt"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +16,7 @@ func init() {
 func createRandomTodo(t *testing.T) *domain.Todo {
 	arg := &domain.Todo{ID: "", Title: util.RandomString(12), Order: 0, Completed: false}
 
-	createdTodo, err := r.Save(arg)
+	createdTodo, err := r.Create(arg)
 	expected := &domain.Todo{ID: "", Title: arg.Title, Order: len(r.db), Completed: false}
 
 	assertCreation(t, expected, createdTodo, err)
@@ -25,7 +24,7 @@ func createRandomTodo(t *testing.T) *domain.Todo {
 	return createdTodo
 }
 
-func TestTodoRepository_Save(t *testing.T) {
+func TestTodoRepository_Create(t *testing.T) {
 	t.Cleanup(func() {
 		r.db = []*domain.Todo{}
 	})
@@ -40,6 +39,13 @@ func TestTodoRepository_Save(t *testing.T) {
 		}
 		createRandomTodo(t)
 	})
+}
+
+func TestTodoRepository_Update(t *testing.T) {
+	t.Cleanup(func() {
+		r.db = []*domain.Todo{}
+	})
+
 	t.Run("update", func(t *testing.T) {
 		r.db = []*domain.Todo{
 			{ID: "1", Title: "todo 1", Order: 1, Completed: false},
@@ -47,7 +53,7 @@ func TestTodoRepository_Save(t *testing.T) {
 		}
 		arg := &domain.Todo{ID: "1", Title: "updated title", Order: 1, Completed: true}
 
-		updatedTodo, err := r.Save(arg)
+		updatedTodo, err := r.Update(arg)
 		expected := &domain.Todo{ID: arg.ID, Title: arg.Title, Order: arg.Order, Completed: arg.Completed}
 
 		assertUpdate(t, expected, updatedTodo, err)
@@ -134,7 +140,7 @@ func TestTodoRepository_FindByOrder(t *testing.T) {
 	})
 	t.Run("given an unknown order should return an ErrNotFound error", func(t *testing.T) {
 		foundTodo, err := r.FindByOrder(3)
-		fmt.Println(r.db)
+
 		assert.Empty(t, foundTodo)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrNotFound)

@@ -29,24 +29,24 @@ createdb:
 	docker exec -it psql createdb --username=postgres --owner=postgres gotodo
 
 dropdb:
-	docker exec -it psql dropdb gotodo
+	docker exec -it psql dropdb --username=postgres gotodo
 
 mig_name =
 
 create_migration:
-	 migrate create -ext sql -dir internal/repositories/psqlrepo/migration -seq $(mig_name)
+	 migrate create -ext sql -dir internal/repositories/psqlrepo/migrations -seq $(mig_name)
 
 migrateup:
-	migrate -path internal/repositories/psqlrepo/migration -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose up
+	migrate -path internal/repositories/psqlrepo/migrations -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose up
 
 migrate1up:
-	migrate -path internal/repositories/psqlrepo/migration -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose up 1
+	migrate -path internal/repositories/psqlrepo/migrations -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose up 1
 
 migratedown:
-	migrate -path internal/repositories/psqlrepo/migration -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose down
+	migrate -path internal/repositories/psqlrepo/migrations -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose down
 
 migrate1down:
-	migrate -path internal/repositories/psqlrepo/migration -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose down 1
+	migrate -path internal/repositories/psqlrepo/migrations -database "postgresql://postgres:password@localhost:5432/gotodo?sslmode=disable" -verbose down 1
 
 
 .PHONY: fmt lint vet build run test mock_repo mock_service postgres createdb dropdb create_migration migrateup migrate1up migratedown migrate1down
