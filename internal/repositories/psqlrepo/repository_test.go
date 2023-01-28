@@ -1,4 +1,4 @@
-package todorepo
+package psqlrepo
 
 //var r *todoRepository
 //

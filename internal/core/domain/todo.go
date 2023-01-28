@@ -7,10 +7,10 @@ import (
 
 // Todo is the representation of a item
 type Todo struct {
-	ID        string
-	Title     string
-	Completed bool
-	Order     int
+	ID        string `db:"id"`
+	Title     string `db:"title"`
+	Completed bool   `db:"completed"`
+	Order     int    `db:"todo_order"`
 }
 
 // TodoResponse is the struct
