@@ -41,6 +41,16 @@ func TestTodoRepository_Create(t *testing.T) {
 	})
 }
 
+func assertCreation(t *testing.T, expected, got *domain.Todo, err error) {
+	t.Helper()
+
+	assert.NotEmpty(t, got)
+	assert.NoError(t, err)
+
+	assert.Equal(t, expected.Title, got.Title)
+	assert.Equal(t, expected.Order, got.Order)
+	assert.NotZero(t, got.ID)
+}
 func TestTodoRepository_Update(t *testing.T) {
 	t.Cleanup(func() {
 		r.db = []*domain.Todo{}
@@ -53,22 +63,11 @@ func TestTodoRepository_Update(t *testing.T) {
 		}
 		arg := &domain.Todo{ID: "1", Title: "updated title", Order: 1, Completed: true}
 
-		updatedTodo, err := r.Update(arg)
+		updatedTodo, err := r.Update(arg.ID, arg)
 		expected := &domain.Todo{ID: arg.ID, Title: arg.Title, Order: arg.Order, Completed: arg.Completed}
 
 		assertUpdate(t, expected, updatedTodo, err)
 	})
-}
-
-func assertCreation(t *testing.T, expected, got *domain.Todo, err error) {
-	t.Helper()
-
-	assert.NotEmpty(t, got)
-	assert.NoError(t, err)
-
-	assert.Equal(t, expected.Title, got.Title)
-	assert.Equal(t, expected.Order, got.Order)
-	assert.NotZero(t, got.ID)
 }
 
 func assertUpdate(t *testing.T, expected, got *domain.Todo, err error) {
@@ -76,7 +75,6 @@ func assertUpdate(t *testing.T, expected, got *domain.Todo, err error) {
 
 	assert.NotEmpty(t, got)
 	assert.NoError(t, err)
-
 	assert.Equal(t, expected, got)
 }
 

@@ -65,7 +65,7 @@ func (t *todoService) UpdateTodo(id string, r domain.TodoUpdateRequest) (*domain
 	}
 	foundTodo.Order = r.Order
 
-	updatedTodo, err := t.R.Update(foundTodo)
+	updatedTodo, err := t.R.Update(id, foundTodo)
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
 	}
@@ -88,7 +88,7 @@ func (t *todoService) PartiallyUpdateTodo(id string, r domain.TodoPartialUpdateR
 		foundTodo.Order = r.Order
 	}
 
-	updatedTodo, err := t.R.Update(foundTodo)
+	updatedTodo, err := t.R.Update(id, foundTodo)
 	if err != nil {
 		return nil, fmt.Errorf("todoservice.UpdateTodo: %v", err)
 	}

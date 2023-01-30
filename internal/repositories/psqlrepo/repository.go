@@ -66,8 +66,14 @@ func (t todoRepository) FindByID(id string) (*domain.Todo, error) {
 }
 
 func (t todoRepository) FindByOrder(order int) (*domain.Todo, error) {
-	//TODO implement me
-	panic("implement me")
+	var foundTodo domain.Todo
+	row := t.db.QueryRowx("SELECT id,title, completed , item_order FROM todos WHERE item_order = $1;", order)
+
+	err := row.Scan(&foundTodo.ID, &foundTodo.Title, &foundTodo.Completed, &foundTodo.Order)
+	if err != nil {
+		return nil, err
+	}
+	return &foundTodo, nil
 }
 
 func (t todoRepository) Create(todo *domain.Todo) (*domain.Todo, error) {
@@ -86,12 +92,24 @@ func (t todoRepository) Create(todo *domain.Todo) (*domain.Todo, error) {
 	return &newTodo, nil
 }
 
-func (t todoRepository) Update(todo *domain.Todo) (*domain.Todo, error) {
-	//TODO implement me
-	panic("implement me")
+func (t todoRepository) Update(id string, todo *domain.Todo) (*domain.Todo, error) {
+	row := t.db.QueryRowx("UPDATE todos SET title = $1, completed = $2, item_order = $3 where id = $4 RETURNING id, title, completed, item_order ", todo.Title, todo.Completed, todo.Order, todo.ID)
+	err := row.Scan(
+		&todo.ID,
+		&todo.Title,
+		&todo.Completed,
+		&todo.Order)
+	if err != nil {
+		return nil, err
+	}
+
+	return todo, nil
 }
 
 func (t todoRepository) DeleteByID(id string) error {
-	//TODO implement me
-	panic("implement me")
+	_, err := t.db.Exec("DELETE FROM todos where id = $1;", id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
