@@ -6,15 +6,19 @@ import (
 	"testing"
 )
 
-var r *todoRepository
+var todoRepo *todoRepository
+var userRepo *userRepository
 
 func TestMain(m *testing.M) {
 	config, err := util.SetupConfig("../../..")
 	if err != nil {
 		log.Fatalf("cannot load config: %v\n", err)
 	}
-
-	r = NewTodoRepository(config.DBDriver, config.DBURL)
-
+	err = OpenDB(config.DBDriver, config.DBURL)
+	if err != nil {
+		log.Fatalf("cannot connect to DB: %v\n", err)
+	}
+	todoRepo = NewTodoRepository()
+	userRepo = NewUserRepository()
 	m.Run()
 }

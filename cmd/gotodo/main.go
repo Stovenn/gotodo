@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"github.com/stovenn/gotodo/internal/api"
-	"github.com/stovenn/gotodo/internal/core/services/todoservice"
+	"github.com/stovenn/gotodo/internal/core/services"
 	"github.com/stovenn/gotodo/internal/repositories/psqlrepo"
 	"github.com/stovenn/gotodo/pkg/util"
 	"log"
@@ -16,11 +16,22 @@ func main() {
 		log.Fatalf("cannot load config: %v\n", err)
 	}
 
+	err = psqlrepo.OpenDB(config.DBDriver, config.DBURL)
+	if err != nil {
+		log.Fatalf("cannot connect to DB: %v\n", err)
+	}
+
 	//branching adapters to ports
-	repository := psqlrepo.NewTodoRepository(config.DBDriver, config.DBURL)
-	service := todoservice.NewTodoService(repository)
-	handler := api.NewHandler(service)
-	server := api.NewServer(handler)
+	todoRepository := psqlrepo.NewTodoRepository()
+	userRepository := psqlrepo.NewUserRepository()
+
+	todoService := services.NewTodoService(todoRepository)
+	userService := services.NewUserService(userRepository)
+
+	todoHandler := api.NewTodoHandler(todoService)
+	userHandler := api.NewUserHandler(userService)
+
+	server := api.NewServer(todoHandler, userHandler)
 
 	fmt.Printf("Server listening on port %s\n", viper.Get("PORT"))
 	err = server.Start()

@@ -16,11 +16,23 @@ run:
 test:
 	go test -v  ./...
 
-mock_repo:
-	mockgen -package mockdb -destination internal/repositories/mock/store.go github.com/stovenn/gotodo/internal/core/ports TodoRepository
+mock: mock_todo_repo mock_user_repo mock_todo_service mock_user_service
 
-mock_service:
-	mockgen -package mockservice -destination internal/core/services/todoservice/mock/service.go github.com/stovenn/gotodo/internal/core/ports TodoService
+mock_repos:mock_todo_repo mock_user_repo
+
+mock_todo_repo:
+	mockgen -package mockdb -destination internal/repositories/mock/todo.go github.com/stovenn/gotodo/internal/core/ports TodoRepository
+
+mock_user_repo:
+	mockgen -package mockdb -destination internal/repositories/mock/user.go github.com/stovenn/gotodo/internal/core/ports UserRepository
+
+mock_todo_service:
+	mockgen -package mockservice -destination internal/core/services/todoservice/mock/todo.go github.com/stovenn/gotodo/internal/core/ports TodoService
+
+mock_user_service:
+	mockgen -package mockservice -destination internal/core/services/todoservice/mock/user.go github.com/stovenn/gotodo/internal/core/ports UserService
+
+mock_services: mock_todo_service mock_user_service
 
 postgres:
 	docker run --name psql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -dp 5432:5432 postgres:13

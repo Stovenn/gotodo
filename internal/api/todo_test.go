@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stovenn/gotodo/internal/core/domain"
-	mockservice "github.com/stovenn/gotodo/internal/core/services/todoservice/mock"
+	"github.com/stovenn/gotodo/internal/core/services/mock"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -26,7 +26,7 @@ func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 		Times(1).
 		Return(todoResponse, nil)
 
-	server := NewServer(NewHandler(service))
+	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
 	body := strings.NewReader(`{"title": "new todo"}`)
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodPost, "/api/todos/", body)
@@ -47,7 +47,7 @@ func TestTodoHandler_HandleListTodo(t *testing.T) {
 		Times(1).
 		Return(todoResponses, nil)
 
-	server := NewServer(NewHandler(service))
+	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/api/todos/", nil)
 	require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 		Return(todoResponse, nil)
 
 	// start test server and send request
-	server := NewServer(NewHandler(service))
+	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
@@ -85,33 +85,34 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 func TestHandler_HandlePutTodo(t *testing.T) {
 	todoResponse := util.CreateRandomTodoResponse(1)
 	update := domain.TodoUpdateRequest{
-		Title:     "updated todo",
-		Completed: true,
-		Order:     1,
+		Title:      "updated todo",
+		Completed:  true,
+		Order:      1,
+		AssignedTo: "user",
 	}
 	expectedResponse := &domain.TodoResponse{
-		ID:        todoResponse.ID,
-		Title:     update.Title,
-		Completed: update.Completed,
-		Order:     update.Order,
-		URL:       todoResponse.URL,
+		ID:         todoResponse.ID,
+		Title:      update.Title,
+		Completed:  update.Completed,
+		Order:      update.Order,
+		AssignedTo: update.AssignedTo,
+		URL:        todoResponse.URL,
 	}
 
 	ctrl := gomock.NewController(t)
 	service := mockservice.NewMockTodoService(ctrl)
 	// build stubs
-
 	service.EXPECT().
 		UpdateTodo(todoResponse.ID, update).
 		Times(1).
 		Return(expectedResponse, nil)
 
 	// start test server and send request
-	server := NewServer(NewHandler(service))
+	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
-	body := strings.NewReader(`{"title": "updated todo", "order": 1, "completed": true}`)
+	body := strings.NewReader(`{"title": "updated todo", "order": 1, "completed": true, "assigned_to": "user"}`)
 	request, err := http.NewRequest(http.MethodPut, url, body)
 	require.NoError(t, err)
 
@@ -143,7 +144,7 @@ func TestHandler_HandlePatchTodo(t *testing.T) {
 		Return(expectedResponse, nil)
 
 	// start test server and send request
-	server := NewServer(NewHandler(service))
+	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
@@ -164,7 +165,7 @@ func TestHandler_HandleDeleteTodo(t *testing.T) {
 	service.EXPECT().DeleteTodo(gomock.Any()).Times(1).Return(nil)
 
 	// start test server and send request
-	server := NewServer(NewHandler(service))
+	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", "1")

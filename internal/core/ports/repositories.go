@@ -10,3 +10,11 @@ type TodoRepository interface {
 	Update(id string, todo *domain.Todo) (*domain.Todo, error)
 	DeleteByID(id string) error
 }
+
+type UserRepository interface {
+	FindAll() ([]*domain.User, error)
+	FindByID(id string) (*domain.User, error)
+	Create(todo *domain.User) (*domain.User, error)
+	Update(id string, todo *domain.User) (*domain.User, error)
+	DeleteByID(id string) error
+}

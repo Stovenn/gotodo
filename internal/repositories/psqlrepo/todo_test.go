@@ -22,7 +22,7 @@ func createRandomTodo(t *testing.T) *domain.Todo {
 		Completed: false,
 	}
 
-	createdTodo, err := r.Create(arg)
+	createdTodo, err := todoRepo.Create(arg)
 	assertCreation(t, expected, createdTodo, err)
 
 	return createdTodo
@@ -30,7 +30,7 @@ func createRandomTodo(t *testing.T) *domain.Todo {
 
 func maxOrder() int {
 	var order int
-	r.db.QueryRowx("SELECT MAX(item_order) from todos").Scan(&order)
+	db.QueryRowx("SELECT MAX(item_order) from todos").Scan(&order)
 	return order
 }
 
@@ -63,7 +63,7 @@ func TestTodoRepository_Update(t *testing.T) {
 		Completed: arg.Completed,
 	}
 
-	updatedTodo, err := r.Update(todo.ID, arg)
+	updatedTodo, err := todoRepo.Update(todo.ID, arg)
 	assertUpdate(t, expected, updatedTodo, err)
 }
 
@@ -78,7 +78,7 @@ func assertUpdate(t *testing.T, expected, got *domain.Todo, err error) {
 func TestTodoRepository_FindByID(t *testing.T) {
 	todo := createRandomTodo(t)
 
-	foundTodo, err := r.FindByID(todo.ID)
+	foundTodo, err := todoRepo.FindByID(todo.ID)
 	assert.NotEmpty(t, foundTodo)
 	assert.NoError(t, err)
 	assert.Equal(t, todo, foundTodo)
@@ -87,7 +87,7 @@ func TestTodoRepository_FindByID(t *testing.T) {
 func TestTodoRepository_FindByOrder(t *testing.T) {
 	todo := createRandomTodo(t)
 
-	foundTodo, err := r.FindByOrder(todo.Order)
+	foundTodo, err := todoRepo.FindByOrder(todo.Order)
 	assert.NotEmpty(t, foundTodo)
 	assert.NoError(t, err)
 	assert.Equal(t, todo, foundTodo)
@@ -97,7 +97,7 @@ func TestTodoRepository_FindAll(t *testing.T) {
 		createRandomTodo(t)
 	}
 
-	todos, err := r.FindAll()
+	todos, err := todoRepo.FindAll()
 	assert.NotEmpty(t, todos)
 	assert.NoError(t, err)
 }
@@ -105,10 +105,10 @@ func TestTodoRepository_FindAll(t *testing.T) {
 func TestTodoRepository_DeleteByID(t *testing.T) {
 	todo := createRandomTodo(t)
 
-	err := r.DeleteByID(todo.ID)
+	err := todoRepo.DeleteByID(todo.ID)
 	assert.NoError(t, err)
 
-	foundTodo, err := r.FindByID(todo.ID)
+	foundTodo, err := todoRepo.FindByID(todo.ID)
 	assert.Empty(t, foundTodo)
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, sql.ErrNoRows)

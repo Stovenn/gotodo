@@ -11,3 +11,8 @@ type TodoService interface {
 	DeleteTodo(id string) error
 	DeleteAllTodos() error
 }
+
+type UserService interface {
+	SignUp(r domain.UserCreationRequest)
+	Login(uc domain.UserCredentials) error
+}
