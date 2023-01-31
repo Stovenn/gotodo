@@ -1,7 +1,11 @@
 package psqlrepo
 
 import (
+	"context"
+	"database/sql"
 	"github.com/stovenn/gotodo/internal/core/domain"
+	"log"
+	"time"
 )
 
 type todoRepository struct {
@@ -12,38 +16,17 @@ func NewTodoRepository() *todoRepository {
 }
 
 func (t todoRepository) FindAll() ([]*domain.Todo, error) {
-	rows, err := db.Queryx("SELECT id,title, completed , item_order FROM todos;")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
 	var todos []*domain.Todo
-	for rows.Next() {
-		var todo domain.Todo
-		if err := rows.Scan(
-			&todo.ID,
-			&todo.Title,
-			&todo.Completed,
-			&todo.Order,
-		); err != nil {
-			return nil, err
-		}
-		todos = append(todos, &todo)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
+	err := db.Select(&todos, "SELECT * FROM todos ORDER BY created_at;")
+	if err != nil {
 		return nil, err
 	}
 	return todos, nil
 }
 
 func (t todoRepository) FindByID(id string) (*domain.Todo, error) {
-	var foundTodo domain.Todo
-	row := db.QueryRowx("SELECT id,title, completed , item_order FROM todos WHERE id = $1;", id)
-
-	err := row.Scan(&foundTodo.ID, &foundTodo.Title, &foundTodo.Completed, &foundTodo.Order)
+	foundTodo := domain.Todo{}
+	err := db.Get(&foundTodo, "SELECT * FROM todos WHERE id = $1;", id)
 	if err != nil {
 		return nil, err
 	}
@@ -51,10 +34,8 @@ func (t todoRepository) FindByID(id string) (*domain.Todo, error) {
 }
 
 func (t todoRepository) FindByOrder(order int) (*domain.Todo, error) {
-	var foundTodo domain.Todo
-	row := db.QueryRowx("SELECT id,title, completed , item_order FROM todos WHERE item_order = $1;", order)
-
-	err := row.Scan(&foundTodo.ID, &foundTodo.Title, &foundTodo.Completed, &foundTodo.Order)
+	foundTodo := domain.Todo{}
+	err := db.Get(&foundTodo, "SELECT * FROM todos WHERE item_order = $1;", order)
 	if err != nil {
 		return nil, err
 	}
@@ -62,28 +43,39 @@ func (t todoRepository) FindByOrder(order int) (*domain.Todo, error) {
 }
 
 func (t todoRepository) Create(todo *domain.Todo) (*domain.Todo, error) {
-	var newTodo domain.Todo
-
-	row := db.QueryRowx("INSERT INTO todos (title, completed, item_order) VALUES ($1, false, (SELECT count(item_order) FROM todos) +1) RETURNING id, title, completed, item_order", todo.Title)
-	err := row.Scan(
-		&newTodo.ID,
-		&newTodo.Title,
-		&newTodo.Completed,
-		&newTodo.Order)
+	tx, err := db.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
+	var maxOrder int
+	err = db.Get(&maxOrder, "SELECT count(item_order) FROM todos")
+	if err != nil {
+		_ = tx.Rollback()
+	}
+	row := db.QueryRowx("INSERT INTO todos (title, completed, item_order, assigned_to) VALUES ($1, false, $2, $3) RETURNING id;", todo.Title, maxOrder+1, todo.AssignedTo)
 
-	return &newTodo, nil
+	var insertedRowID string
+	err = row.Scan(&insertedRowID)
+	if err != nil {
+		_ = tx.Rollback()
+	}
+	if err := tx.Commit(); err != nil {
+		log.Fatal(err)
+	}
+	return t.FindByID(insertedRowID)
 }
 
-func (t todoRepository) Update(id string, todo *domain.Todo) (*domain.Todo, error) {
-	row := db.QueryRowx("UPDATE todos SET title = $1, completed = $2, item_order = $3 where id = $4 RETURNING id, title, completed, item_order ", todo.Title, todo.Completed, todo.Order, todo.ID)
+func (t todoRepository) Update(todo *domain.Todo) (*domain.Todo, error) {
+	row := db.QueryRowx("UPDATE todos SET title = $1, completed = $2, item_order = $3, updated_at = $4 where id = $5 RETURNING *", todo.Title, todo.Completed, todo.Order, time.Now().In(time.UTC), todo.ID)
 	err := row.Scan(
 		&todo.ID,
 		&todo.Title,
 		&todo.Completed,
-		&todo.Order)
+		&todo.Order,
+		&todo.AssignedTo,
+		&todo.CreatedAt,
+		&todo.UpdatedAt,
+	)
 	if err != nil {
 		return nil, err
 	}

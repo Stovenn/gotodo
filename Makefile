@@ -27,10 +27,10 @@ mock_user_repo:
 	mockgen -package mockdb -destination internal/repositories/mock/user.go github.com/stovenn/gotodo/internal/core/ports UserRepository
 
 mock_todo_service:
-	mockgen -package mockservice -destination internal/core/services/todoservice/mock/todo.go github.com/stovenn/gotodo/internal/core/ports TodoService
+	mockgen -package mockservice -destination internal/core/services/mock/todo.go github.com/stovenn/gotodo/internal/core/ports TodoService
 
 mock_user_service:
-	mockgen -package mockservice -destination internal/core/services/todoservice/mock/user.go github.com/stovenn/gotodo/internal/core/ports UserService
+	mockgen -package mockservice -destination internal/core/services/mock/user.go github.com/stovenn/gotodo/internal/core/ports UserService
 
 mock_services: mock_todo_service mock_user_service
 

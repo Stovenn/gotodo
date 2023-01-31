@@ -39,7 +39,7 @@ func (r *todoRepository) Create(todo *domain.Todo) (*domain.Todo, error) {
 	return created, nil
 }
 
-func (r *todoRepository) Update(id string, todo *domain.Todo) (*domain.Todo, error) {
+func (r *todoRepository) Update(todo *domain.Todo) (*domain.Todo, error) {
 	found, _ := r.FindByID(todo.ID)
 	found = todo
 	return found, nil

@@ -63,7 +63,7 @@ func TestTodoRepository_Update(t *testing.T) {
 		}
 		arg := &domain.Todo{ID: "1", Title: "updated title", Order: 1, Completed: true}
 
-		updatedTodo, err := r.Update(arg.ID, arg)
+		updatedTodo, err := r.Update(arg)
 		expected := &domain.Todo{ID: arg.ID, Title: arg.Title, Order: arg.Order, Completed: arg.Completed}
 
 		assertUpdate(t, expected, updatedTodo, err)

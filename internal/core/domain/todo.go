@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/spf13/viper"
 	"time"
@@ -8,13 +9,13 @@ import (
 
 // Todo is the representation of a item
 type Todo struct {
-	ID         string    `db:"id"`
-	Title      string    `db:"title"`
-	Completed  bool      `db:"completed"`
-	Order      int       `db:"item_order"`
-	AssignedTo string    `db:"assigned_to"`
-	CreatedAt  time.Time `db:"created_at"`
-	UpdatedAt  time.Time `db:"updated_at"`
+	ID         string         `db:"id"`
+	Title      string         `db:"title"`
+	Completed  bool           `db:"completed"`
+	Order      int            `db:"item_order"`
+	AssignedTo sql.NullString `db:"assigned_to"`
+	CreatedAt  time.Time      `db:"created_at"`
+	UpdatedAt  time.Time      `db:"updated_at"`
 }
 
 // TodoResponse is the struct
@@ -57,7 +58,7 @@ func (t Todo) ToResponse() *TodoResponse {
 		Title:      t.Title,
 		Completed:  t.Completed,
 		Order:      t.Order,
-		AssignedTo: t.AssignedTo,
+		AssignedTo: t.AssignedTo.String,
 		URL:        fmt.Sprintf("http://%s:%s/api/todos/%s", viper.Get("HOST"), viper.Get("PORT"), t.ID),
 	}
 }

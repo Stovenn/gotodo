@@ -107,7 +107,7 @@ func TestTodoService_UpdateTodo(t *testing.T) {
 
 	findByIDCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
 	findByOrderCall := repository.EXPECT().FindByOrder(updateRequest.Order).Times(1).Return(nil, nil)
-	saveCall := repository.EXPECT().Update(todo.ID, updatedTodo).Times(1).Return(updatedTodo, nil)
+	saveCall := repository.EXPECT().Update(updatedTodo).Times(1).Return(updatedTodo, nil)
 	gomock.InOrder(findByIDCall, findByOrderCall, saveCall)
 
 	response, err := s.UpdateTodo(todo.ID, updateRequest)
@@ -132,7 +132,7 @@ func TestTodoService_PartiallyUpdateTodo(t *testing.T) {
 
 	findByIDCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
 	findByOrderCall := repository.EXPECT().FindByOrder(updateRequest.Order).Times(1).Return(nil, nil)
-	saveCall := repository.EXPECT().Update(todo.ID, updatedTodo).Times(1).Return(updatedTodo, nil)
+	saveCall := repository.EXPECT().Update(updatedTodo).Times(1).Return(updatedTodo, nil)
 	gomock.InOrder(findByIDCall, findByOrderCall, saveCall)
 
 	response, err := s.PartiallyUpdateTodo(todo.ID, updateRequest)

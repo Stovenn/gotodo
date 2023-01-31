@@ -11,7 +11,7 @@ func NewUserRepository() *userRepository {
 	return &userRepository{}
 }
 
-func (t userRepository) FindAll() ([]*domain.User, error) {
+func (t *userRepository) FindAll() ([]*domain.User, error) {
 	rows, err := db.Queryx("SELECT id,full_name, email FROM users;")
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (t userRepository) FindAll() ([]*domain.User, error) {
 	return users, nil
 }
 
-func (t userRepository) FindByID(id string) (*domain.User, error) {
+func (t *userRepository) FindByID(id string) (*domain.User, error) {
 	var foundUser domain.User
 	row := db.QueryRowx("SELECT id,full_name, email FROM users WHERE id = $1;", id)
 
@@ -52,7 +52,7 @@ func (t userRepository) FindByID(id string) (*domain.User, error) {
 	return &foundUser, nil
 }
 
-func (t userRepository) Create(user *domain.User) (*domain.User, error) {
+func (t *userRepository) Create(user *domain.User) (*domain.User, error) {
 	var newUser domain.User
 
 	row := db.QueryRowx("INSERT INTO users (full_name, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, full_name, email", user.FullName, user.Email, user.HashedPassword)
@@ -67,11 +67,20 @@ func (t userRepository) Create(user *domain.User) (*domain.User, error) {
 	return &newUser, nil
 }
 
-func (t userRepository) Update(id string, todo *domain.User) (*domain.User, error) {
-	return nil, nil
+func (t *userRepository) Update(user *domain.User) (*domain.User, error) {
+	row := db.QueryRowx("UPDATE users SET full_name = $1, hashed_password = $2 where id = $3 RETURNING id, full_name, email", user.FullName, user.HashedPassword, user.ID)
+	err := row.Scan(
+		&user.ID,
+		&user.FullName,
+		&user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
-func (t userRepository) DeleteByID(id string) error {
+func (t *userRepository) DeleteByID(id string) error {
 	_, err := db.Exec("DELETE FROM users where id = $1;", id)
 	if err != nil {
 		return err

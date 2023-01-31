@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"math/rand"
 	"strings"
@@ -28,6 +29,11 @@ func RandomString(n int) string {
 
 	return sb.String()
 }
+
+func RandomEmail(n int) string {
+	return fmt.Sprintf("%s@email.com", RandomString(n))
+}
+
 func CreateRandomTodo(order int) *domain.Todo {
 	return &domain.Todo{
 		ID:        RandomString(15),
