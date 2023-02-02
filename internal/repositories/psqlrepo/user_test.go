@@ -15,15 +15,9 @@ func createRandomUser(t *testing.T) *domain.User {
 		Email:          util.RandomEmail(10),
 		HashedPassword: "secret",
 	}
-	expected := &domain.User{
-		ID:             "",
-		FullName:       arg.FullName,
-		Email:          arg.Email,
-		HashedPassword: arg.HashedPassword,
-	}
 
 	createdUser, err := userRepo.Create(arg)
-	assertUserCreation(t, expected, createdUser, err)
+	assertUserCreation(t, arg, createdUser, err)
 
 	return createdUser
 }
@@ -39,6 +33,7 @@ func assertUserCreation(t *testing.T, expected, got *domain.User, err error) {
 	assert.NoError(t, err)
 	assert.Equal(t, expected.FullName, got.FullName)
 	assert.Equal(t, expected.Email, got.Email)
+	assert.Equal(t, expected.HashedPassword, got.HashedPassword)
 	assert.NotZero(t, got.ID)
 }
 

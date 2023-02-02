@@ -40,12 +40,13 @@ func (t *userRepository) FindAll() ([]*domain.User, error) {
 
 func (t *userRepository) FindByID(id string) (*domain.User, error) {
 	var foundUser domain.User
-	row := db.QueryRowx("SELECT id,full_name, email FROM users WHERE id = $1;", id)
+	row := db.QueryRowx("SELECT id,full_name, email, hashed_password FROM users WHERE id = $1;", id)
 
 	err := row.Scan(
 		&foundUser.ID,
 		&foundUser.FullName,
-		&foundUser.Email)
+		&foundUser.Email,
+		&foundUser.HashedPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +56,12 @@ func (t *userRepository) FindByID(id string) (*domain.User, error) {
 func (t *userRepository) Create(user *domain.User) (*domain.User, error) {
 	var newUser domain.User
 
-	row := db.QueryRowx("INSERT INTO users (full_name, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, full_name, email", user.FullName, user.Email, user.HashedPassword)
+	row := db.QueryRowx("INSERT INTO users (full_name, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, full_name, email, hashed_password", user.FullName, user.Email, user.HashedPassword)
 	err := row.Scan(
 		&newUser.ID,
 		&newUser.FullName,
-		&newUser.Email)
+		&newUser.Email,
+		&newUser.HashedPassword)
 	if err != nil {
 		return nil, err
 	}
