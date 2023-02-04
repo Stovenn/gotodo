@@ -2,6 +2,7 @@ package domain
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/viper"
 	"time"
@@ -26,6 +27,17 @@ type TodoResponse struct {
 	Order      int    `json:"order"`
 	AssignedTo string `json:"assigned_to"`
 	URL        string `json:"url"`
+}
+
+func (tr TodoResponse) JSON() []byte {
+	var b []byte
+	var err error
+
+	b, err = json.Marshal(&tr)
+	if err != nil {
+		return nil
+	}
+	return b
 }
 
 // TodoCreationRequest is the body of a todo creation

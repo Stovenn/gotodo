@@ -14,6 +14,7 @@ type TodoRepository interface {
 type UserRepository interface {
 	FindAll() ([]*domain.User, error)
 	FindByID(id string) (*domain.User, error)
+	FindByEmail(email string) (*domain.User, error)
 	Create(user *domain.User) (*domain.User, error)
 	Update(user *domain.User) (*domain.User, error)
 	DeleteByID(id string) error

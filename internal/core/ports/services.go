@@ -13,6 +13,6 @@ type TodoService interface {
 }
 
 type UserService interface {
-	SignUp(r domain.UserCreationRequest)
+	SignUp(r domain.UserCreationRequest) (*domain.UserResponse, error)
 	Login(uc domain.UserCredentials) error
 }

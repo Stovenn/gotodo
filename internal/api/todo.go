@@ -2,21 +2,17 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/internal/core/ports"
 	"net/http"
 )
 
-var validate *validator.Validate
-
 type TodoHandler struct {
 	S ports.TodoService
 }
 
 func NewTodoHandler(todoService ports.TodoService) *TodoHandler {
-	validate = validator.New()
 	return &TodoHandler{S: todoService}
 }
 
@@ -33,7 +29,7 @@ func (t *TodoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 		handleError(w, http.StatusInternalServerError, err)
 		return
 	}
-	withJSON(w, http.StatusCreated, response)
+	withJSON(w, http.StatusCreated, response.JSON())
 }
 
 func (t *TodoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +38,17 @@ func (t *TodoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
 		handleError(w, http.StatusInternalServerError, err)
 		return
 	}
-	withJSON(w, http.StatusOK, response...)
+	var b []byte
+	b = append(b, byte('['))
+	for i, r := range response {
+		b = append(b, r.JSON()...)
+		if i == len(response)-1 {
+			break
+		}
+		b = append(b, byte(','))
+	}
+	b = append(b, byte(']'))
+	withJSON(w, http.StatusOK, b)
 }
 
 func (t *TodoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +58,7 @@ func (t *TodoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request)
 		handleError(w, http.StatusNotFound, err)
 		return
 	}
-	withJSON(w, http.StatusOK, response)
+	withJSON(w, http.StatusOK, response.JSON())
 }
 
 func (t *TodoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +79,7 @@ func (t *TodoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 		handleError(w, http.StatusNotFound, err)
 		return
 	}
-	withJSON(w, http.StatusOK, response)
+	withJSON(w, http.StatusOK, response.JSON())
 }
 
 func (t *TodoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +95,7 @@ func (t *TodoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
 		handleError(w, http.StatusNotFound, err)
 		return
 	}
-	withJSON(w, http.StatusOK, response)
+	withJSON(w, http.StatusOK, response.JSON())
 }
 
 func (t *TodoHandler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
@@ -98,30 +104,4 @@ func (t *TodoHandler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		handleError(w, http.StatusNotFound, err)
 	}
-}
-
-func handleError(w http.ResponseWriter, statusCode int, err error) {
-	w.WriteHeader(statusCode)
-	w.Write([]byte(err.Error()))
-}
-
-func withJSON(w http.ResponseWriter, statusCode int, response ...*domain.TodoResponse) {
-	var b []byte
-	var err error
-	if len(response) == 1 {
-		b, err = json.Marshal(&response[0])
-		if err != nil {
-			handleError(w, http.StatusInternalServerError, err)
-			return
-		}
-	} else {
-		b, err = json.Marshal(&response)
-		if err != nil {
-			handleError(w, http.StatusInternalServerError, err)
-			return
-		}
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	w.Write(b)
 }

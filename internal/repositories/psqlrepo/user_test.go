@@ -4,16 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/stovenn/gotodo/internal/core/domain"
+	"github.com/stovenn/gotodo/pkg/bcrypt"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func createRandomUser(t *testing.T) *domain.User {
+	password, err := bcrypt.HashPassword("secret")
+	require.NoError(t, err)
+
 	arg := &domain.User{
 		FullName:       util.RandomString(12),
 		Email:          util.RandomEmail(10),
-		HashedPassword: "secret",
+		HashedPassword: password,
 	}
 
 	createdUser, err := userRepo.Create(arg)
@@ -39,10 +44,11 @@ func assertUserCreation(t *testing.T, expected, got *domain.User, err error) {
 
 func TestUserRepository_Update(t *testing.T) {
 	user := createRandomUser(t)
+	password, err := bcrypt.HashPassword("new secret")
 	arg := &domain.User{
 		ID:             user.ID,
 		FullName:       "new fullname",
-		HashedPassword: "newsecret",
+		HashedPassword: password,
 	}
 	expected := &domain.User{
 		ID:             arg.ID,

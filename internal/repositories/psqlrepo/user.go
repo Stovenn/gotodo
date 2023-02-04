@@ -53,6 +53,21 @@ func (t *userRepository) FindByID(id string) (*domain.User, error) {
 	return &foundUser, nil
 }
 
+func (t *userRepository) FindByEmail(email string) (*domain.User, error) {
+	var foundUser domain.User
+	row := db.QueryRowx("SELECT id,full_name, email, hashed_password FROM users WHERE email = $1;", email)
+
+	err := row.Scan(
+		&foundUser.ID,
+		&foundUser.FullName,
+		&foundUser.Email,
+		&foundUser.HashedPassword)
+	if err != nil {
+		return nil, err
+	}
+	return &foundUser, nil
+}
+
 func (t *userRepository) Create(user *domain.User) (*domain.User, error) {
 	var newUser domain.User
 

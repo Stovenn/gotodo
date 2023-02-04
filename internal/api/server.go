@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"net/http"
@@ -10,7 +11,11 @@ type Server struct {
 	router *mux.Router
 }
 
+var validate *validator.Validate
+
 func NewServer(todoHandler *TodoHandler, userHandler *UserHandler) *Server {
+	validate = validator.New()
+
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
 	todoRoutes.HandleFunc("/", todoHandler.HandleCreateTodo).Methods(http.MethodPost)
@@ -21,8 +26,8 @@ func NewServer(todoHandler *TodoHandler, userHandler *UserHandler) *Server {
 	todoRoutes.HandleFunc("/{id}", todoHandler.HandleDeleteTodo).Methods(http.MethodDelete)
 
 	userRoutes := r.PathPrefix("/users").Subrouter()
-	userRoutes.HandleFunc("/", userHandler.HandleSignUp).Methods(http.MethodPost)
-	userRoutes.HandleFunc("/", userHandler.HandleLogin).Methods(http.MethodPost)
+	userRoutes.HandleFunc("/register", userHandler.HandleSignUp).Methods(http.MethodPost)
+	userRoutes.HandleFunc("/login", userHandler.HandleLogin).Methods(http.MethodPost)
 	return &Server{router: r}
 }
 

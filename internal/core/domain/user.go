@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type User struct {
 	ID             string    `db:"id"`
@@ -15,6 +18,17 @@ type UserResponse struct {
 	ID       string `json:"id"`
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
+}
+
+func (tr UserResponse) JSON() []byte {
+	var b []byte
+	var err error
+
+	b, err = json.Marshal(&tr)
+	if err != nil {
+		return nil
+	}
+	return b
 }
 
 type UserCreationRequest struct {

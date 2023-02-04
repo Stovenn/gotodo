@@ -193,6 +193,7 @@ func requireBodyMatchTodoResponses(t *testing.T, body *bytes.Buffer, expected []
 	require.NoError(t, err)
 
 	var todoResponses []*domain.TodoResponse
+	fmt.Printf(string(b))
 	err = json.Unmarshal(b, &todoResponses)
 	require.NoError(t, err)
 	require.Equal(t, expected, todoResponses)
