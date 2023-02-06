@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stovenn/gotodo/internal/core/domain"
-	"github.com/stovenn/gotodo/internal/core/ports"
 	mockdb "github.com/stovenn/gotodo/internal/repositories/mock"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
-
-var s ports.TodoService
 
 func TestTodoService_CreateTodo(t *testing.T) {
 	arg := domain.TodoCreationRequest{
@@ -22,14 +19,14 @@ func TestTodoService_CreateTodo(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
-	s = NewTodoService(repository)
+	ts = NewTodoService(repository)
 
 	repository.EXPECT().
 		Create(&domain.Todo{Title: arg.Title}).
 		Times(1).
 		Return(todo, nil)
 
-	response, err := s.CreateTodo(arg)
+	response, err := ts.CreateTodo(arg)
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)
@@ -41,14 +38,14 @@ func TestTodoService_DisplayAllTodos(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
-	s = NewTodoService(repository)
+	ts = NewTodoService(repository)
 
 	repository.EXPECT().
 		FindAll().
 		Times(1).
 		Return(todos, nil)
 
-	response, err := s.DisplayAllTodos()
+	response, err := ts.DisplayAllTodos()
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)
@@ -58,7 +55,7 @@ func TestTodoService_DisplayAllTodos(t *testing.T) {
 func TestTodoService_DisplayTodo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
-	s = NewTodoService(repository)
+	ts = NewTodoService(repository)
 
 	t.Run("given a todo id should return a todo response", func(t *testing.T) {
 		todo := util.CreateRandomTodo(1)
@@ -69,7 +66,7 @@ func TestTodoService_DisplayTodo(t *testing.T) {
 			Times(1).
 			Return(todo, nil)
 
-		response, err := s.DisplayTodo(todo.ID)
+		response, err := ts.DisplayTodo(todo.ID)
 
 		assert.NotEmpty(t, response)
 		assert.NoError(t, err)
@@ -84,7 +81,7 @@ func TestTodoService_DisplayTodo(t *testing.T) {
 			Times(1).
 			Return(nil, fmt.Errorf("todo not found"))
 
-		response, err := s.DisplayTodo(id)
+		response, err := ts.DisplayTodo(id)
 
 		assert.Empty(t, response)
 		assert.Error(t, err)
@@ -103,14 +100,14 @@ func TestTodoService_UpdateTodo(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
-	s = NewTodoService(repository)
+	ts = NewTodoService(repository)
 
 	findByIDCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
 	findByOrderCall := repository.EXPECT().FindByOrder(updateRequest.Order).Times(1).Return(nil, nil)
 	saveCall := repository.EXPECT().Update(updatedTodo).Times(1).Return(updatedTodo, nil)
 	gomock.InOrder(findByIDCall, findByOrderCall, saveCall)
 
-	response, err := s.UpdateTodo(todo.ID, updateRequest)
+	response, err := ts.UpdateTodo(todo.ID, updateRequest)
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)
@@ -128,14 +125,14 @@ func TestTodoService_PartiallyUpdateTodo(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
-	s = NewTodoService(repository)
+	ts = NewTodoService(repository)
 
 	findByIDCall := repository.EXPECT().FindByID(todo.ID).Times(1).Return(todo, nil)
 	findByOrderCall := repository.EXPECT().FindByOrder(updateRequest.Order).Times(1).Return(nil, nil)
 	saveCall := repository.EXPECT().Update(updatedTodo).Times(1).Return(updatedTodo, nil)
 	gomock.InOrder(findByIDCall, findByOrderCall, saveCall)
 
-	response, err := s.PartiallyUpdateTodo(todo.ID, updateRequest)
+	response, err := ts.PartiallyUpdateTodo(todo.ID, updateRequest)
 
 	assert.NotEmpty(t, response)
 	assert.NoError(t, err)
@@ -145,7 +142,7 @@ func TestTodoService_PartiallyUpdateTodo(t *testing.T) {
 func TestTodoService_DeleteTodo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockTodoRepository(ctrl)
-	s = NewTodoService(repository)
+	ts = NewTodoService(repository)
 
 	t.Run("given a todo id should not return an error", func(t *testing.T) {
 		id := "1"
@@ -155,7 +152,7 @@ func TestTodoService_DeleteTodo(t *testing.T) {
 			Times(1).
 			Return(nil)
 
-		err := s.DeleteTodo(id)
+		err := ts.DeleteTodo(id)
 
 		assert.NoError(t, err)
 	})
@@ -167,7 +164,7 @@ func TestTodoService_DeleteTodo(t *testing.T) {
 			Times(1).
 			Return(fmt.Errorf("todo not found"))
 
-		err := s.DeleteTodo(id)
+		err := ts.DeleteTodo(id)
 
 		assert.Error(t, err)
 		assert.EqualError(t, err, "todoservice.DeleteOneTodo: todo not found")
