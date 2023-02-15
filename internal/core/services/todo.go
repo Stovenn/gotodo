@@ -83,7 +83,7 @@ func (t *todoService) PartiallyUpdateTodo(id string, r domain.TodoPartialUpdateR
 	foundTodo.Completed = r.Completed
 	if r.Order != 0 {
 		if t.isOrderConflict(r.Order, foundTodo.ID) {
-			return nil, fmt.Errorf("todoservice.PartiallyUpdateTodo: %v", err)
+			return nil, errors.New("todo order conflict")
 		}
 		foundTodo.Order = r.Order
 	}
