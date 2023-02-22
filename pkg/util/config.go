@@ -3,13 +3,16 @@ package util
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"time"
 )
 
 type Config struct {
-	DBDriver string `mapstructure:"DB_DRIVER"`
-	DBURL    string `mapstructure:"DB_URL"`
-	Host     string `mapstructure:"HOST"`
-	Port     string `mapstructure:"PORT"`
+	DBDriver      string        `mapstructure:"DB_DRIVER"`
+	DBUrl         string        `mapstructure:"DB_URL"`
+	Host          string        `mapstructure:"HOST"`
+	Port          string        `mapstructure:"PORT"`
+	SymmetricKey  string        `mapstructure:"SYMMETRIC_KEY"`
+	TokenDuration time.Duration `mapstructure:"TOKEN_DURATION"`
 }
 
 func SetupConfig(path string) (Config, error) {

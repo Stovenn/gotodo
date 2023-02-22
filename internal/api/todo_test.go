@@ -26,7 +26,7 @@ func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 		Times(1).
 		Return(todoResponse, nil)
 
-	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
+	server := newTestServer(t, service, nil)
 	body := strings.NewReader(`{"title": "new todo"}`)
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodPost, "/api/todos/", body)
@@ -47,7 +47,7 @@ func TestTodoHandler_HandleListTodo(t *testing.T) {
 		Times(1).
 		Return(todoResponses, nil)
 
-	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
+	server := newTestServer(t, service, nil)
 	recorder := httptest.NewRecorder()
 	request, err := http.NewRequest(http.MethodGet, "/api/todos/", nil)
 	require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 		Return(todoResponse, nil)
 
 	// start test server and send request
-	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
+	server := newTestServer(t, service, nil)
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
@@ -108,7 +108,7 @@ func TestHandler_HandlePutTodo(t *testing.T) {
 		Return(expectedResponse, nil)
 
 	// start test server and send request
-	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
+	server := newTestServer(t, service, nil)
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
@@ -144,7 +144,7 @@ func TestHandler_HandlePatchTodo(t *testing.T) {
 		Return(expectedResponse, nil)
 
 	// start test server and send request
-	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
+	server := newTestServer(t, service, nil)
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", todoResponse.ID)
@@ -165,7 +165,7 @@ func TestHandler_HandleDeleteTodo(t *testing.T) {
 	service.EXPECT().DeleteTodo(gomock.Any()).Times(1).Return(nil)
 
 	// start test server and send request
-	server := NewServer(NewTodoHandler(service), NewUserHandler(nil))
+	server := newTestServer(t, service, nil)
 	recorder := httptest.NewRecorder()
 
 	url := fmt.Sprintf("/api/todos/%s", "1")
@@ -193,7 +193,6 @@ func requireBodyMatchTodoResponses(t *testing.T, body *bytes.Buffer, expected []
 	require.NoError(t, err)
 
 	var todoResponses []*domain.TodoResponse
-	fmt.Printf(string(b))
 	err = json.Unmarshal(b, &todoResponses)
 	require.NoError(t, err)
 	require.Equal(t, expected, todoResponses)

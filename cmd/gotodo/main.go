@@ -16,7 +16,7 @@ func main() {
 		log.Fatalf("cannot load config: %v\n", err)
 	}
 
-	err = psqlrepo.OpenDB(config.DBDriver, config.DBURL)
+	err = psqlrepo.OpenDB(config.DBDriver, config.DBUrl)
 	if err != nil {
 		log.Fatalf("cannot connect to DB: %v\n", err)
 	}
@@ -28,10 +28,10 @@ func main() {
 	todoService := services.NewTodoService(todoRepository)
 	userService := services.NewUserService(userRepository)
 
-	todoHandler := api.NewTodoHandler(todoService)
-	userHandler := api.NewUserHandler(userService)
-
-	server := api.NewServer(todoHandler, userHandler)
+	server, err := api.NewServer(config, todoService, userService)
+	if err != nil {
+		log.Fatalf("cannot create server: %v\n", err)
+	}
 
 	fmt.Printf("Server listening on port %s\n", viper.Get("PORT"))
 	err = server.Start()

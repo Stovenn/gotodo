@@ -1,36 +1,59 @@
 package api
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
+	"github.com/stovenn/gotodo/internal/core/ports"
+	"github.com/stovenn/gotodo/pkg/token"
+	"github.com/stovenn/gotodo/pkg/util"
 	"net/http"
 )
 
 type Server struct {
-	router *mux.Router
+	config     util.Config
+	router     *mux.Router
+	tokenMaker token.Maker
+
+	ports.TodoService
+	ports.UserService
 }
 
 var validate *validator.Validate
 
-func NewServer(todoHandler *TodoHandler, userHandler *UserHandler) *Server {
+func NewServer(config util.Config, todoService ports.TodoService, userService ports.UserService) (*Server, error) {
 	validate = validator.New()
+
+	server := &Server{
+		TodoService: todoService,
+		UserService: userService,
+	}
+	maker, err := token.NewPasetoMaker(config.SymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("error : %w", err)
+	}
+
+	server.tokenMaker = maker
 
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
-	todoRoutes.HandleFunc("/", todoHandler.HandleCreateTodo).Methods(http.MethodPost)
-	todoRoutes.HandleFunc("/", todoHandler.HandleListTodo).Methods(http.MethodGet)
-	todoRoutes.HandleFunc("/{id}", todoHandler.HandleFindTodoByID).Methods(http.MethodGet)
-	todoRoutes.HandleFunc("/{id}", todoHandler.HandlePutTodo).Methods(http.MethodPut)
-	todoRoutes.HandleFunc("/{id}", todoHandler.HandlePatchTodo).Methods(http.MethodPatch)
-	todoRoutes.HandleFunc("/{id}", todoHandler.HandleDeleteTodo).Methods(http.MethodDelete)
+	todoRoutes.HandleFunc("/", server.HandleCreateTodo).Methods(http.MethodPost)
+	todoRoutes.HandleFunc("/", server.HandleListTodo).Methods(http.MethodGet)
+	todoRoutes.HandleFunc("/{id}", server.HandleFindTodoByID).Methods(http.MethodGet)
+	todoRoutes.HandleFunc("/{id}", server.HandlePutTodo).Methods(http.MethodPut)
+	todoRoutes.HandleFunc("/{id}", server.HandlePatchTodo).Methods(http.MethodPatch)
+	todoRoutes.HandleFunc("/{id}", server.HandleDeleteTodo).Methods(http.MethodDelete)
 
 	userRoutes := r.PathPrefix("/users").Subrouter()
-	userRoutes.HandleFunc("/register", userHandler.HandleSignUp).Methods(http.MethodPost)
-	userRoutes.HandleFunc("/login", userHandler.HandleLogin).Methods(http.MethodPost)
-	return &Server{router: r}
+	userRoutes.HandleFunc("/register", server.HandleSignUp).Methods(http.MethodPost)
+	userRoutes.HandleFunc("/login", server.HandleLogin).Methods(http.MethodPost)
+
+	server.router = r
+
+	return server, nil
 }
 
-func (server Server) Start() error {
-	return http.ListenAndServe(":"+viper.GetString("PORT"), server.router)
+func (s *Server) Start() error {
+	return http.ListenAndServe(":"+viper.GetString("PORT"), s.router)
 }

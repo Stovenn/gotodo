@@ -4,19 +4,10 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/stovenn/gotodo/internal/core/domain"
-	"github.com/stovenn/gotodo/internal/core/ports"
 	"net/http"
 )
 
-type TodoHandler struct {
-	S ports.TodoService
-}
-
-func NewTodoHandler(todoService ports.TodoService) *TodoHandler {
-	return &TodoHandler{S: todoService}
-}
-
-func (t *TodoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 	var request domain.TodoCreationRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -24,7 +15,7 @@ func (t *TodoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := t.S.CreateTodo(request)
+	response, err := s.TodoService.CreateTodo(request)
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, err)
 		return
@@ -32,8 +23,8 @@ func (t *TodoHandler) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusCreated, response.JSON())
 }
 
-func (t *TodoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
-	response, err := t.S.DisplayAllTodos()
+func (s *Server) HandleListTodo(w http.ResponseWriter, r *http.Request) {
+	response, err := s.TodoService.DisplayAllTodos()
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, err)
 		return
@@ -51,9 +42,9 @@ func (t *TodoHandler) HandleListTodo(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusOK, b)
 }
 
-func (t *TodoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleFindTodoByID(w http.ResponseWriter, r *http.Request) {
 	todoId := mux.Vars(r)["id"]
-	response, err := t.S.DisplayTodo(todoId)
+	response, err := s.TodoService.DisplayTodo(todoId)
 	if err != nil {
 		handleError(w, http.StatusNotFound, err)
 		return
@@ -61,7 +52,7 @@ func (t *TodoHandler) HandleFindTodoByID(w http.ResponseWriter, r *http.Request)
 	withJSON(w, http.StatusOK, response.JSON())
 }
 
-func (t *TodoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 	var request domain.TodoUpdateRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -74,7 +65,7 @@ func (t *TodoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	todoID := mux.Vars(r)["id"]
-	response, err := t.S.UpdateTodo(todoID, request)
+	response, err := s.TodoService.UpdateTodo(todoID, request)
 	if err != nil {
 		handleError(w, http.StatusNotFound, err)
 		return
@@ -82,7 +73,7 @@ func (t *TodoHandler) HandlePutTodo(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusOK, response.JSON())
 }
 
-func (t *TodoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
 	var request domain.TodoPartialUpdateRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -90,7 +81,7 @@ func (t *TodoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	todoID := mux.Vars(r)["id"]
-	response, err := t.S.PartiallyUpdateTodo(todoID, request)
+	response, err := s.TodoService.PartiallyUpdateTodo(todoID, request)
 	if err != nil {
 		handleError(w, http.StatusNotFound, err)
 		return
@@ -98,9 +89,9 @@ func (t *TodoHandler) HandlePatchTodo(w http.ResponseWriter, r *http.Request) {
 	withJSON(w, http.StatusOK, response.JSON())
 }
 
-func (t *TodoHandler) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	todoId := mux.Vars(r)["id"]
-	err := t.S.DeleteTodo(todoId)
+	err := s.TodoService.DeleteTodo(todoId)
 	if err != nil {
 		handleError(w, http.StatusNotFound, err)
 	}
