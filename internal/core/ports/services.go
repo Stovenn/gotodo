@@ -1,6 +1,12 @@
 package ports
 
-import "github.com/stovenn/gotodo/internal/core/domain"
+import (
+	"github.com/stovenn/gotodo/internal/core/domain"
+	"github.com/stovenn/gotodo/internal/dto/request"
+	"github.com/stovenn/gotodo/internal/dto/response"
+	"github.com/stovenn/gotodo/pkg/token"
+	"github.com/stovenn/gotodo/pkg/util"
+)
 
 type TodoService interface {
 	CreateTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error)
@@ -13,6 +19,6 @@ type TodoService interface {
 }
 
 type UserService interface {
-	SignUp(r domain.UserCreationRequest) (*domain.UserResponse, error)
-	Login(uc domain.UserCredentials) error
+	SignUp(r request.UserCreationRequest) (*response.UserResponse, error)
+	Login(uc request.UserCredentials, m token.Maker, c util.Config) (*response.LoginResponse, error)
 }

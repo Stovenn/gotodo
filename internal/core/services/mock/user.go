@@ -8,7 +8,10 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	domain "github.com/stovenn/gotodo/internal/core/domain"
+	request "github.com/stovenn/gotodo/internal/dto/request"
+	response "github.com/stovenn/gotodo/internal/dto/response"
+	token "github.com/stovenn/gotodo/pkg/token"
+	util "github.com/stovenn/gotodo/pkg/util"
 )
 
 // MockUserService is a mock of UserService interface.
@@ -35,24 +38,25 @@ func (m *MockUserService) EXPECT() *MockUserServiceMockRecorder {
 }
 
 // Login mocks base method.
-func (m *MockUserService) Login(arg0 domain.UserCredentials) error {
+func (m *MockUserService) Login(arg0 request.UserCredentials, arg1 token.Maker, arg2 util.Config) (*response.LoginResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Login", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Login", arg0, arg1, arg2)
+	ret0, _ := ret[0].(*response.LoginResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Login indicates an expected call of Login.
-func (mr *MockUserServiceMockRecorder) Login(arg0 interface{}) *gomock.Call {
+func (mr *MockUserServiceMockRecorder) Login(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockUserService)(nil).Login), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockUserService)(nil).Login), arg0, arg1, arg2)
 }
 
 // SignUp mocks base method.
-func (m *MockUserService) SignUp(arg0 domain.UserCreationRequest) (*domain.UserResponse, error) {
+func (m *MockUserService) SignUp(arg0 request.UserCreationRequest) (*response.UserResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignUp", arg0)
-	ret0, _ := ret[0].(*domain.UserResponse)
+	ret0, _ := ret[0].(*response.UserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

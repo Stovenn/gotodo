@@ -1,17 +1,20 @@
 package services
 
 import (
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stovenn/gotodo/internal/core/domain"
+	"github.com/stovenn/gotodo/internal/dto/request"
+	"github.com/stovenn/gotodo/internal/dto/response"
 	mockdb "github.com/stovenn/gotodo/internal/repositories/mock"
 	"github.com/stovenn/gotodo/pkg/bcrypt"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func TestUserService_SignUp(t *testing.T) {
-	arg := domain.UserCreationRequest{
+	arg := request.UserCreationRequest{
 		FullName: "John Doe",
 		Email:    "unknown@email.com",
 		Password: "password",
@@ -26,7 +29,7 @@ func TestUserService_SignUp(t *testing.T) {
 		CreatedAt:      time.Now(),
 		UpdatedAt:      time.Now(),
 	}
-	expectedResponse := user.ToResponse()
+	expectedResponse := response.ToResponse(user)
 	ctrl := gomock.NewController(t)
 	repository := mockdb.NewMockUserRepository(ctrl)
 	us = NewUserService(repository)
