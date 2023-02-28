@@ -2,13 +2,14 @@ package api
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"github.com/stovenn/gotodo/internal/core/ports"
 	"github.com/stovenn/gotodo/pkg/token"
 	"github.com/stovenn/gotodo/pkg/util"
-	"net/http"
 )
 
 type Server struct {
@@ -36,7 +37,14 @@ func NewServer(config util.Config, todoService ports.TodoService, userService po
 
 	server.tokenMaker = maker
 
+	server.setupRouter()
+
+	return server, nil
+}
+
+func (server *Server) setupRouter() {
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
+
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
 	todoRoutes.HandleFunc("/", server.HandleCreateTodo).Methods(http.MethodPost)
 	todoRoutes.HandleFunc("/", server.HandleListTodo).Methods(http.MethodGet)
@@ -50,8 +58,6 @@ func NewServer(config util.Config, todoService ports.TodoService, userService po
 	userRoutes.HandleFunc("/login", server.HandleLogin).Methods(http.MethodPost)
 
 	server.router = r
-
-	return server, nil
 }
 
 func (s *Server) Start() error {
