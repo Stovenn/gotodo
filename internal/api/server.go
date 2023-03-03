@@ -46,6 +46,7 @@ func (server *Server) setupRouter() {
 	r := mux.NewRouter().PathPrefix("/api/").Subrouter()
 
 	todoRoutes := r.PathPrefix("/todos").Subrouter()
+	todoRoutes.Use(authMiddleware(server.tokenMaker))
 	todoRoutes.HandleFunc("/", server.HandleCreateTodo).Methods(http.MethodPost)
 	todoRoutes.HandleFunc("/", server.HandleListTodo).Methods(http.MethodGet)
 	todoRoutes.HandleFunc("/{id}", server.HandleFindTodoByID).Methods(http.MethodGet)
