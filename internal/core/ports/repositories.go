@@ -2,6 +2,7 @@ package ports
 
 import "github.com/stovenn/gotodo/internal/core/domain"
 
+// TodoRepository defines a set of methods to interact with todos in a database
 type TodoRepository interface {
 	FindAll() ([]*domain.Todo, error)
 	FindByID(id string) (*domain.Todo, error)
@@ -11,6 +12,7 @@ type TodoRepository interface {
 	DeleteByID(id string) error
 }
 
+// UserRespository defines a set of methods to interact with users in a database
 type UserRepository interface {
 	FindAll() ([]*domain.User, error)
 	FindByID(id string) (*domain.User, error)

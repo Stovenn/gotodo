@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// User represents an todolist user
 type User struct {
 	ID             string    `db:"id"`
 	FullName       string    `db:"full_name"`
@@ -12,4 +13,3 @@ type User struct {
 	CreatedAt      time.Time `db:"created_at"`
 	UpdatedAt      time.Time `db:"updated_at"`
 }
-

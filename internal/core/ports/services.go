@@ -8,6 +8,7 @@ import (
 	"github.com/stovenn/gotodo/pkg/util"
 )
 
+// TodoService defines a set of methods to handle todos specific uses cases
 type TodoService interface {
 	CreateTodo(r domain.TodoCreationRequest) (*domain.TodoResponse, error)
 	DisplayTodo(id string) (*domain.TodoResponse, error)
@@ -18,6 +19,7 @@ type TodoService interface {
 	DeleteAllTodos() error
 }
 
+// UserService defines a set of methods to handle users specific uses cases
 type UserService interface {
 	SignUp(r request.UserCreationRequest) (*response.UserResponse, error)
 	Login(uc request.UserCredentials, m token.Maker, c util.Config) (*response.LoginResponse, error)
