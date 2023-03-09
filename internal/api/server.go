@@ -30,6 +30,7 @@ func NewServer(config util.Config, todoService ports.TodoService, userService po
 	validate = validator.New()
 
 	server := &Server{
+		config:      config,
 		infoLogger:  infoLogger,
 		errLogger:   errLogger,
 		TodoService: todoService,

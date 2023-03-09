@@ -3,13 +3,19 @@ package psqlrepo
 import (
 	"context"
 	"database/sql"
-	"github.com/stovenn/gotodo/internal/core/domain"
+	"errors"
 	"log"
 	"time"
+
+	"github.com/stovenn/gotodo/internal/core/domain"
 )
 
 type todoRepository struct {
 }
+
+var (
+	ErrTodoNotFound = errors.New("could not find Todo")
+)
 
 func NewTodoRepository() *todoRepository {
 	return &todoRepository{}
@@ -28,6 +34,9 @@ func (t todoRepository) FindByID(id string) (*domain.Todo, error) {
 	foundTodo := domain.Todo{}
 	err := db.Get(&foundTodo, "SELECT * FROM todos WHERE id = $1;", id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrTodoNotFound
+		}
 		return nil, err
 	}
 	return &foundTodo, nil
@@ -37,6 +46,9 @@ func (t todoRepository) FindByOrder(order int) (*domain.Todo, error) {
 	foundTodo := domain.Todo{}
 	err := db.Get(&foundTodo, "SELECT * FROM todos WHERE item_order = $1;", order)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrTodoNotFound
+		}
 		return nil, err
 	}
 	return &foundTodo, nil

@@ -3,12 +3,13 @@ package services
 import (
 	"errors"
 	"fmt"
+
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/internal/core/ports"
 )
 
 var (
-	ErrOrderConflict = errors.New("todo error conflict")
+	ErrOrderConflict = errors.New("todo order conflict")
 )
 
 type todoService struct {

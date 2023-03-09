@@ -9,7 +9,6 @@ import (
 )
 
 func (s *Server) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
-	s.infoLogger.Println("Creating new Todo")
 	var request domain.TodoCreationRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -29,7 +28,6 @@ func (s *Server) HandleCreateTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleListTodo(w http.ResponseWriter, r *http.Request) {
-	s.infoLogger.Println("Fetching Todos")
 	response, err := s.TodoService.DisplayAllTodos()
 	if err != nil {
 		s.errLogger.Printf("Could not fetch todos: %v\n", err)
@@ -111,7 +109,7 @@ func (s *Server) HandleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 	todoId := mux.Vars(r)["id"]
 	err := s.TodoService.DeleteTodo(todoId)
 	if err != nil {
-		s.infoLogger.Printf("Not Todo was found for id %s\n", todoId)
+		s.infoLogger.Printf("No Todo was found for id %s\n", todoId)
 		return
 	}
 	s.infoLogger.Printf("Successfully deleted Todo %s\n", todoId)
