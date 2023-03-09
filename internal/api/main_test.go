@@ -1,12 +1,14 @@
 package api
 
 import (
-	"github.com/stovenn/gotodo/internal/core/ports"
-	"github.com/stovenn/gotodo/pkg/util"
-	"github.com/stretchr/testify/require"
+	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stovenn/gotodo/internal/core/ports"
+	"github.com/stovenn/gotodo/pkg/util"
+	"github.com/stretchr/testify/require"
 )
 
 func newTestServer(t *testing.T, todoService ports.TodoService, userService ports.UserService) *Server {
@@ -14,7 +16,7 @@ func newTestServer(t *testing.T, todoService ports.TodoService, userService port
 		SymmetricKey:  util.RandomString(32),
 		TokenDuration: time.Minute,
 	}
-	server, err := NewServer(config, todoService, userService)
+	server, err := NewServer(config, todoService, userService, log.Default(), log.Default())
 	require.NoError(t, err)
 
 	return server

@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/spf13/viper"
 	"github.com/stovenn/gotodo/internal/api"
 	"github.com/stovenn/gotodo/internal/core/services"
 	"github.com/stovenn/gotodo/internal/repositories/psqlrepo"
 	"github.com/stovenn/gotodo/pkg/util"
-	"log"
 )
 
 func main() {
@@ -28,7 +30,10 @@ func main() {
 	todoService := services.NewTodoService(todoRepository)
 	userService := services.NewUserService(userRepository)
 
-	server, err := api.NewServer(config, todoService, userService)
+	infoLogger := log.New(os.Stdout, "[INFO] ", log.LstdFlags)
+	errLogger := log.New(os.Stderr, "[ERROR] ", log.LstdFlags)
+
+	server, err := api.NewServer(config, todoService, userService, infoLogger, errLogger)
 	if err != nil {
 		log.Fatalf("cannot create server: %v\n", err)
 	}

@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/golang/mock/gomock"
-	"github.com/stovenn/gotodo/internal/core/domain"
-	"github.com/stovenn/gotodo/internal/core/services/mock"
-	"github.com/stovenn/gotodo/pkg/util"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stovenn/gotodo/internal/core/domain"
+	mockservice "github.com/stovenn/gotodo/internal/core/services/mock"
+	"github.com/stovenn/gotodo/pkg/util"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTodoHandler_HandleCreateTodo(t *testing.T) {

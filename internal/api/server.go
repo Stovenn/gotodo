@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -16,6 +17,8 @@ type Server struct {
 	config     util.Config
 	router     *mux.Router
 	tokenMaker token.Maker
+	infoLogger *log.Logger
+	errLogger  *log.Logger
 
 	ports.TodoService
 	ports.UserService
@@ -23,10 +26,12 @@ type Server struct {
 
 var validate *validator.Validate
 
-func NewServer(config util.Config, todoService ports.TodoService, userService ports.UserService) (*Server, error) {
+func NewServer(config util.Config, todoService ports.TodoService, userService ports.UserService, infoLogger, errLogger *log.Logger) (*Server, error) {
 	validate = validator.New()
 
 	server := &Server{
+		infoLogger:  infoLogger,
+		errLogger:   errLogger,
 		TodoService: todoService,
 		UserService: userService,
 	}

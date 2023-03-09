@@ -2,10 +2,12 @@ package util
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
+// Config stores all the configuration of Gotodo
 type Config struct {
 	DBDriver      string        `mapstructure:"DB_DRIVER"`
 	DBUrl         string        `mapstructure:"DB_URL"`
@@ -15,6 +17,7 @@ type Config struct {
 	TokenDuration time.Duration `mapstructure:"TOKEN_DURATION"`
 }
 
+// SetupConfig find a local config file and map the keys to a Config struct
 func SetupConfig(path string) (Config, error) {
 	var config Config
 	viper.AddConfigPath(path)
