@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
-	"github.com/spf13/viper"
 	"github.com/stovenn/gotodo/internal/api"
 	"github.com/stovenn/gotodo/internal/core/services"
 	"github.com/stovenn/gotodo/internal/repositories/psqlrepo"
@@ -35,12 +39,25 @@ func main() {
 
 	server, err := api.NewServer(config, todoService, userService, infoLogger, errLogger)
 	if err != nil {
-		log.Fatalf("cannot create server: %v\n", err)
+		errLogger.Fatalf("cannot create server: %v\n", err)
 	}
 
-	fmt.Printf("Server listening on port %s\n", viper.Get("PORT"))
-	err = server.Start()
-	if err != nil {
-		log.Fatalf("an error occured on the server: %v", err)
+	go func() {
+		fmt.Printf("Server listening on port %s\n", config.Port)
+		err = server.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errLogger.Fatalf("an error occured on the server: %v", err)
+		}
+	}()
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt)
+
+	sig := <-sigChan
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	infoLogger.Println("received terminate, graceful shutdown", sig)
+	if err = server.Shutdown(ctx); err != nil {
+		errLogger.Printf("error on server shutdown: %v", err)
 	}
 }
