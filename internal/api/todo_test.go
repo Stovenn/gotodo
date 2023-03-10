@@ -9,13 +9,19 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stovenn/gotodo/internal/core/domain"
 	mockservice "github.com/stovenn/gotodo/internal/core/services/mock"
+	"github.com/stovenn/gotodo/pkg/token"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/require"
 )
+
+func setupAuth(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+	addAuthorization(t, request, tokenMaker, authTypeBearer, "user", time.Minute)
+}
 
 func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 	todoResponse := util.CreateRandomTodoResponse(1)
@@ -33,6 +39,7 @@ func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodPost, "/api/todos/", body)
 	require.NoError(t, err)
 
+	setupAuth(t, request, server.tokenMaker)
 	server.Server.Handler.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusCreated, recorder.Code)
 	requireBodyMatchTodoResponse(t, recorder.Body, todoResponse)
@@ -53,6 +60,7 @@ func TestTodoHandler_HandleListTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, "/api/todos/", nil)
 	require.NoError(t, err)
 
+	setupAuth(t, request, server.tokenMaker)
 	server.Server.Handler.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusOK, recorder.Code)
 	requireBodyMatchTodoResponses(t, recorder.Body, todoResponses)
@@ -77,6 +85,7 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	require.NoError(t, err)
 
+	setupAuth(t, request, server.tokenMaker)
 	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
@@ -117,6 +126,7 @@ func TestHandler_HandlePutTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodPut, url, body)
 	require.NoError(t, err)
 
+	setupAuth(t, request, server.tokenMaker)
 	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
@@ -153,6 +163,7 @@ func TestHandler_HandlePatchTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodPatch, url, body)
 	require.NoError(t, err)
 
+	setupAuth(t, request, server.tokenMaker)
 	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
@@ -173,6 +184,7 @@ func TestHandler_HandleDeleteTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	require.NoError(t, err)
 
+	setupAuth(t, request, server.tokenMaker)
 	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)

@@ -72,5 +72,5 @@ func (server *Server) setupRouter() {
 	userRoutes.HandleFunc("/register", server.HandleSignUp).Methods(http.MethodPost)
 	userRoutes.HandleFunc("/login", server.HandleLogin).Methods(http.MethodPost)
 
-	server.Server.Handler = r
+	server.Handler = r
 }
