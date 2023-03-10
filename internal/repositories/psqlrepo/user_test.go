@@ -1,14 +1,13 @@
 package psqlrepo
 
 import (
-	"database/sql"
-	"fmt"
+	"testing"
+
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/pkg/bcrypt"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func createRandomUser(t *testing.T) *domain.User {
@@ -45,6 +44,8 @@ func assertUserCreation(t *testing.T, expected, got *domain.User, err error) {
 func TestUserRepository_Update(t *testing.T) {
 	user := createRandomUser(t)
 	password, err := bcrypt.HashPassword("new secret")
+	require.NoError(t, err)
+
 	arg := &domain.User{
 		ID:             user.ID,
 		FullName:       "new fullname",
@@ -57,9 +58,7 @@ func TestUserRepository_Update(t *testing.T) {
 		HashedPassword: arg.HashedPassword,
 	}
 
-	fmt.Println(user)
 	updatedUser, err := userRepo.Update(arg)
-	fmt.Println(updatedUser)
 	assertUserUpdate(t, expected, updatedUser, err)
 }
 
@@ -99,5 +98,5 @@ func TestUserRepository_DeleteByID(t *testing.T) {
 	foundTodo, err := todoRepo.FindByID(user.ID)
 	assert.Empty(t, foundTodo)
 	assert.Error(t, err)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
+	assert.ErrorIs(t, err, ErrTodoNotFound)
 }

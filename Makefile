@@ -14,7 +14,7 @@ run:
 	./gotodo
 
 test:
-	go test -v  ./...
+	go test -v -cover ./...
 
 mock: mock_todo_repo mock_user_repo mock_todo_service mock_user_service
 

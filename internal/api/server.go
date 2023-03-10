@@ -15,7 +15,6 @@ import (
 
 type Server struct {
 	config     util.Config
-	router     *mux.Router
 	tokenMaker token.Maker
 	infoLogger *log.Logger
 	errLogger  *log.Logger

@@ -33,7 +33,7 @@ func TestTodoHandler_HandleCreateTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodPost, "/api/todos/", body)
 	require.NoError(t, err)
 
-	server.router.ServeHTTP(recorder, request)
+	server.Server.Handler.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusCreated, recorder.Code)
 	requireBodyMatchTodoResponse(t, recorder.Body, todoResponse)
 }
@@ -53,7 +53,7 @@ func TestTodoHandler_HandleListTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, "/api/todos/", nil)
 	require.NoError(t, err)
 
-	server.router.ServeHTTP(recorder, request)
+	server.Server.Handler.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusOK, recorder.Code)
 	requireBodyMatchTodoResponses(t, recorder.Body, todoResponses)
 }
@@ -77,7 +77,7 @@ func TestTodoHandler_HandleFindTodoByID(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	require.NoError(t, err)
 
-	server.router.ServeHTTP(recorder, request)
+	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
 	requireBodyMatchTodoResponse(t, recorder.Body, todoResponse)
@@ -117,7 +117,7 @@ func TestHandler_HandlePutTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodPut, url, body)
 	require.NoError(t, err)
 
-	server.router.ServeHTTP(recorder, request)
+	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
 	requireBodyMatchTodoResponse(t, recorder.Body, expectedResponse)
@@ -153,7 +153,7 @@ func TestHandler_HandlePatchTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodPatch, url, body)
 	require.NoError(t, err)
 
-	server.router.ServeHTTP(recorder, request)
+	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
 	requireBodyMatchTodoResponse(t, recorder.Body, expectedResponse)
@@ -173,7 +173,7 @@ func TestHandler_HandleDeleteTodo(t *testing.T) {
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	require.NoError(t, err)
 
-	server.router.ServeHTTP(recorder, request)
+	server.Server.Handler.ServeHTTP(recorder, request)
 	// check response
 	require.Equal(t, http.StatusOK, recorder.Code)
 }

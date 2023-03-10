@@ -2,11 +2,12 @@ package psqlrepo
 
 import (
 	"database/sql"
+	"testing"
+	"time"
+
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func createRandomTodo(t *testing.T) *domain.Todo {
@@ -138,5 +139,5 @@ func TestTodoRepository_DeleteByID(t *testing.T) {
 	foundTodo, err := todoRepo.FindByID(todo.ID)
 	assert.Empty(t, foundTodo)
 	assert.Error(t, err)
-	assert.ErrorIs(t, err, sql.ErrNoRows)
+	assert.ErrorIs(t, err, ErrTodoNotFound)
 }
