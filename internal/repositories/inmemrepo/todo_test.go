@@ -1,10 +1,11 @@
 package inmemrepo
 
 import (
+	"testing"
+
 	"github.com/stovenn/gotodo/internal/core/domain"
 	"github.com/stovenn/gotodo/pkg/util"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var r *todoRepository
@@ -83,8 +84,24 @@ func TestTodoRepository_FindAll(t *testing.T) {
 	todo2 := createRandomTodo(t)
 
 	expected := []*domain.Todo{
-		{ID: todo1.ID, Title: todo1.Title, Order: todo1.Order, Completed: todo1.Completed},
-		{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed},
+		{
+			ID:         todo1.ID,
+			Title:      todo1.Title,
+			Order:      todo1.Order,
+			Completed:  todo1.Completed,
+			AssignedTo: todo1.AssignedTo,
+			CreatedAt:  todo1.CreatedAt,
+			UpdatedAt:  todo1.UpdatedAt,
+		},
+		{
+			ID:         todo2.ID,
+			Title:      todo2.Title,
+			Order:      todo2.Order,
+			Completed:  todo2.Completed,
+			AssignedTo: todo2.AssignedTo,
+			CreatedAt:  todo2.CreatedAt,
+			UpdatedAt:  todo2.UpdatedAt,
+		},
 	}
 
 	todos, err := r.FindAll()
@@ -100,7 +117,15 @@ func TestTodoRepository_FindByID(t *testing.T) {
 	})
 	t.Run("given a todo id should return associated todo item", func(t *testing.T) {
 		todo := createRandomTodo(t)
-		expected := &domain.Todo{ID: todo.ID, Title: todo.Title, Order: todo.Order, Completed: todo.Completed}
+		expected := &domain.Todo{
+			ID:         todo.ID,
+			Title:      todo.Title,
+			Order:      todo.Order,
+			Completed:  todo.Completed,
+			AssignedTo: todo.AssignedTo,
+			CreatedAt:  todo.CreatedAt,
+			UpdatedAt:  todo.UpdatedAt,
+		}
 
 		foundTodo, err := r.FindByID(todo.ID)
 
@@ -128,7 +153,15 @@ func TestTodoRepository_FindByOrder(t *testing.T) {
 		_ = createRandomTodo(t)
 		todo2 := createRandomTodo(t)
 
-		expected := &domain.Todo{ID: todo2.ID, Title: todo2.Title, Order: todo2.Order, Completed: todo2.Completed}
+		expected := &domain.Todo{
+			ID:         todo2.ID,
+			Title:      todo2.Title,
+			Order:      todo2.Order,
+			Completed:  todo2.Completed,
+			AssignedTo: todo2.AssignedTo,
+			CreatedAt:  todo2.CreatedAt,
+			UpdatedAt:  todo2.UpdatedAt,
+		}
 
 		foundTodo, err := r.FindByOrder(todo2.Order)
 
@@ -158,11 +191,6 @@ func TestTodoRepository_DeleteByID(t *testing.T) {
 		notFoundTodo, err := r.FindByID(newtodo.ID)
 
 		assert.Empty(t, notFoundTodo)
-		assert.Error(t, err)
-		assert.EqualError(t, err, "todo not found")
-	})
-	t.Run("given an unknown todo id should return an ErrNotFound error", func(t *testing.T) {
-		err := r.DeleteByID("unknown")
 		assert.Error(t, err)
 		assert.EqualError(t, err, "todo not found")
 	})

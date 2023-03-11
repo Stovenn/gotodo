@@ -2,6 +2,8 @@ package inmemrepo
 
 import (
 	"errors"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/stovenn/gotodo/internal/core/domain"
 )
@@ -33,7 +35,7 @@ func (r *todoRepository) FindByID(id string) (*domain.Todo, error) {
 
 func (r *todoRepository) Create(todo *domain.Todo) (*domain.Todo, error) {
 	id := uuid.New().String()
-	created := &domain.Todo{ID: id, Title: todo.Title, Order: len(r.db) + 1, Completed: false}
+	created := &domain.Todo{ID: id, Title: todo.Title, Order: len(r.db) + 1, Completed: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 
 	r.db = append(r.db, created)
 	return created, nil
@@ -41,7 +43,7 @@ func (r *todoRepository) Create(todo *domain.Todo) (*domain.Todo, error) {
 
 func (r *todoRepository) Update(todo *domain.Todo) (*domain.Todo, error) {
 	found, _ := r.FindByID(todo.ID)
-	found = todo
+	*found = *todo
 	return found, nil
 }
 
