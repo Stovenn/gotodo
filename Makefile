@@ -8,10 +8,10 @@ vet:
 	go vet ./...
 
 build:vet
-	go build -o gotodo cmd/gotodo/main.go
+	go build -o bin/gotodo cmd/gotodo/main.go
 
 run:
-	./gotodo
+	./bin/gotodo
 
 test:
 	go test -v -cover ./...
@@ -35,7 +35,7 @@ mock_user_service:
 mock_services: mock_todo_service mock_user_service
 
 postgres:
-	docker run --name psql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -dp 5432:5432 postgres:13
+	docker run --name psql --network gotodo_network -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -dp 5432:5432 postgres:13
 
 createdb:
 	docker exec -it psql createdb --username=postgres --owner=postgres gotodo
